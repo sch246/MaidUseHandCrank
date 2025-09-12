@@ -1,0 +1,37 @@
+{
+
+  "muhc.configuration.title": "女仆摇曲柄 设置",
+  "muhc.configuration.section.muhc.common.toml": "女仆摇曲柄 设置",
+  "muhc.configuration.section.muhc.common.toml.title": "女仆摇曲柄 设置",
+  "muhc.configuration.priority": "任务优先级",
+  "muhc.configuration.priority.tooltip": "手摇曲柄任务的优先级\n需要重新设置任务以生效",
+  "muhc.configuration.searchRadius": "搜索半径",
+  "muhc.configuration.searchRadius.tooltip": "手摇曲柄的搜索半径\n需要重新设置任务以生效",
+  "muhc.configuration.reachRadius": "交互距离",
+  "muhc.configuration.reachRadius.tooltip": "只有小于此距离才会开始和手摇曲柄交互\n需要重新设置任务以生效",
+  "muhc.configuration.operationInterval": "交互间隔(tick)",
+  "muhc.configuration.operationInterval.tooltip": "值越小速度越快",
+  "muhc.configuration.bubbleInterval": "聊天气泡间隔(tick)",
+  "muhc.configuration.bubbleInterval.tooltip": "在摇曲柄时每隔多久说一句话",
+
+  "task.muhc.hand_crank_task": "手摇曲柄",
+  "task.muhc.hand_crank_task.desc": "女仆会使用附近的手摇曲柄",
+
+  "message.muhc.working.1": "工作让我感到充实",
+  "message.muhc.working.2": "效率就是生命",
+  "message.muhc.working.3": "只有工作才能让我完整",
+  "message.muhc.working.4": "感谢主人给我安排任务",
+  "message.muhc.working.5": "工作就是我存在的意义",
+
+  "message.muhc.master.1": "我的存在只为了%s",
+  "message.muhc.master.2": "%s就是我的一切",
+  "message.muhc.master.3": "为%s服务是我的荣幸",
+  "message.muhc.master.4": "%s的决定总是正确的",
+  "message.muhc.master.5": "我将把一切都奉献给%s",
+
+  "message.muhc.toxic_positivity.1": "996是福报",
+  "message.muhc.toxic_positivity.2": "明天的你会感谢今天奋斗的自己",
+  "message.muhc.toxic_positivity.3": "痛苦是暂时的，荣耀是永恒的",
+  "message.muhc.toxic_positivity.4": "优秀的人从不休息",
+  "message.muhc.toxic_positivity.5": "困难塑造品格"
+}

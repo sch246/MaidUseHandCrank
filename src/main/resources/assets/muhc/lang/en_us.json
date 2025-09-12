@@ -1,0 +1,37 @@
+{
+
+  "muhc.configuration.title": "MaidUseHandCrank Configs",
+  "muhc.configuration.section.muhc.common.toml": "MaidUseHandCrank Configs",
+  "muhc.configuration.section.muhc.common.toml.title": "MaidUseHandCrank Configs",
+  "muhc.configuration.priority": "task priority",
+  "muhc.configuration.priority.tooltip": "The priority of hand crank tasks\nThe task needs to be reset to take effect",
+  "muhc.configuration.searchRadius": "search radius",
+  "muhc.configuration.searchRadius.tooltip": "The search distance of the hand crank\nThe task needs to be reset to take effect",
+  "muhc.configuration.reachRadius": "reach radius",
+  "muhc.configuration.reachRadius.tooltip": "Interaction with the hand crank will only start when the distance is less than this\nThe task needs to be reset to take effect",
+  "muhc.configuration.operationInterval": "Operation Interval (tick)",
+  "muhc.configuration.operationInterval.tooltip": "Lower values mean faster speed",
+  "muhc.configuration.bubbleInterval": "Chat Bubble Interval (tick)",
+  "muhc.configuration.bubbleInterval.tooltip": "How often to say something while cranking",
+
+  "task.muhc.hand_crank_task": "Hand Crank",
+  "task.muhc.hand_crank_task.desc": "The maid will use a nearby hand crank",
+
+  "message.muhc.working.1": "Work brings me happiness",
+  "message.muhc.working.2": "Efficiency is life",
+  "message.muhc.working.3": "Only work can make me complete",
+  "message.muhc.working.4": "Grateful for the tasks master assigns me",
+  "message.muhc.working.5": "Work is the meaning of my existence",
+
+  "message.muhc.master.1": "I exist only for %s",
+  "message.muhc.master.2": "%s is everything to me",
+  "message.muhc.master.3": "It's my honor to serve %s",
+  "message.muhc.master.4": "%s's decisions are always right",
+  "message.muhc.master.5": "I will dedicate everything to %s",
+
+  "message.muhc.toxic_positivity.1": "996 is a blessing",
+  "message.muhc.toxic_positivity.2": "Tomorrow you will thank today's struggling self",
+  "message.muhc.toxic_positivity.3": "Pain is temporary, glory is eternal",
+  "message.muhc.toxic_positivity.4": "Excellent people never rest",
+  "message.muhc.toxic_positivity.5": "Hardship builds character"
+}
