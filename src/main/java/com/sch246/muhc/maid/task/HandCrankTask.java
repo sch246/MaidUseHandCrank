@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.sounds.SoundEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -97,23 +98,21 @@ class UseHandCrank extends MaidCheckRateTask {
     private int operationTimer = 0;
     private int bubbleTimer = 0;
     private final RandomSource random = RandomSource.create();
-    private static final String[] CHAT_BUBBLES = new String[]{
-            "message." + MaidUseHandCrank.MODID + ".working.1",
-            "message." + MaidUseHandCrank.MODID + ".working.2",
-            "message." + MaidUseHandCrank.MODID + ".working.3",
-            "message." + MaidUseHandCrank.MODID + ".working.4",
-            "message." + MaidUseHandCrank.MODID + ".working.5",
-            "message." + MaidUseHandCrank.MODID + ".master.1",
-            "message." + MaidUseHandCrank.MODID + ".master.2",
-            "message." + MaidUseHandCrank.MODID + ".master.3",
-            "message." + MaidUseHandCrank.MODID + ".master.4",
-            "message." + MaidUseHandCrank.MODID + ".master.5",
-            "message." + MaidUseHandCrank.MODID + ".toxic_positivity.1",
-            "message." + MaidUseHandCrank.MODID + ".toxic_positivity.2",
-            "message." + MaidUseHandCrank.MODID + ".toxic_positivity.3",
-            "message." + MaidUseHandCrank.MODID + ".toxic_positivity.4",
-            "message." + MaidUseHandCrank.MODID + ".toxic_positivity.5",
-    };
+    private static final String[] CHAT_BUBBLES;
+
+    static {
+        List<String> keys = new ArrayList<>();
+        for (int i = 1; i <= 38; i++) {
+            keys.add("message." + MaidUseHandCrank.MODID + ".working." + i);
+        }
+
+        for (int i = 1; i <= 13; i++) {
+            keys.add("message." + MaidUseHandCrank.MODID + ".master." + i);
+        }
+
+        keys.add("message." + MaidUseHandCrank.MODID + ".master2.1");
+        CHAT_BUBBLES = keys.toArray(new String[0]);
+    }
 
     public UseHandCrank(float speed, int closeEnoughDist) {
         super(ImmutableMap.of(
@@ -225,19 +224,29 @@ class UseHandCrank extends MaidCheckRateTask {
             bubbleTimer++;
             if (bubbleTimer >= Config.BUBBLE_INTERVAL.get()){
                 int i = random.nextInt(CHAT_BUBBLES.length);
-                String messageKey = CHAT_BUBBLES[i];
-                Component component = messageKey.contains(".master.")
-                        ? Component.translatable(
-                                messageKey,
-                                (maid.getOwner() != null)
-                                        ? maid.getOwner().getName()
-                                        : "Master")
-                        : Component.translatable(messageKey);
+                Component component = getComponent(maid, i);
                 maid.getChatBubbleManager().addChatBubble(TextChatBubbleData.type2(component));
                 bubbleTimer=0;
             }
         });
 
+    }
+
+    private static @NotNull Component getComponent(EntityMaid maid, int i) {
+        String messageKey = CHAT_BUBBLES[i];
+        Component component;
+        Component ownerName = (maid.getOwner() != null)
+                ? maid.getOwner().getName()
+                : Component.literal("Master");
+
+        if (messageKey.contains(".master2.")) {
+            component = Component.translatable(messageKey, ownerName, ownerName);
+        } else if (messageKey.contains(".master.")) {
+            component = Component.translatable(messageKey, ownerName);
+        } else {
+            component = Component.translatable(messageKey);
+        }
+        return component;
     }
 
     @Override
