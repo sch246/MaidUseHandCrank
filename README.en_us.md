@@ -3,8 +3,8 @@
 Allows Touhou Little Maid to use Create's Hand Crank
 
 <p align="center">
-    <a href="#">English</a> | 
-    <a href="README">简体中文</a>
+    <a href="README.md">简体中文</a> | 
+    <a href="#">English</a>
 </p>
 
 ## Summary

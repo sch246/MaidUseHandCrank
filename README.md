@@ -3,8 +3,8 @@
 让车万女仆能使用机械动力的手摇曲柄
 
 <p align="center">
-    <a href="README.en_us">English</a> | 
-    <a href="#">简体中文</a>
+    <a href="#.md">简体中文</a> | 
+    <a href="README.en_us">English</a>
 </p>
 
 ## 摘要
