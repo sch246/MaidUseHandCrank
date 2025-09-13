@@ -25,7 +25,7 @@ public class MaidUseHandCrankClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code
-        MaidUseHandCrank.LOGGER.info("HELLO FROM CLIENT SETUP");
-        MaidUseHandCrank.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+//        MaidUseHandCrank.LOGGER.info("HELLO FROM CLIENT SETUP");
+//        MaidUseHandCrank.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }
 }

@@ -47,7 +47,7 @@ public class MaidUseHandCrank {
     public MaidUseHandCrank(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
 //        MemoryRegistry.register(modEventBus);
-        LOGGER.info("注册中！");
+        LOGGER.debug("注册中！");
 //        modEventBus.addListener(this::commonSetup);
         InitPoi.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);

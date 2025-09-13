@@ -198,5 +198,5 @@ idea {
     }
 }
 jar {
-    archiveFileName = "${mod_id}-${mod_version}-neoforge-${minecraft_version}.jar"
+    archiveFileName = "${mod_name}_${mod_version}-neoforge_${neo_version}-${minecraft_version}.jar"
 }

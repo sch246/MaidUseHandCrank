@@ -12,6 +12,7 @@ import com.mojang.datafixers.util.Pair;
 import com.sch246.muhc.Config;
 import com.sch246.muhc.MaidUseHandCrank;
 import com.sch246.muhc.create.InitPoi;
+import com.sch246.muhc.util.DynamicLangKeys;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.kinetics.crank.HandCrankBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -35,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.sounds.SoundEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -98,21 +98,6 @@ class UseHandCrank extends MaidCheckRateTask {
     private int operationTimer = 0;
     private int bubbleTimer = 0;
     private final RandomSource random = RandomSource.create();
-    private static final String[] CHAT_BUBBLES;
-
-    static {
-        List<String> keys = new ArrayList<>();
-        for (int i = 1; i <= 38; i++) {
-            keys.add("message." + MaidUseHandCrank.MODID + ".working." + i);
-        }
-
-        for (int i = 1; i <= 13; i++) {
-            keys.add("message." + MaidUseHandCrank.MODID + ".master." + i);
-        }
-
-        keys.add("message." + MaidUseHandCrank.MODID + ".master2.1");
-        CHAT_BUBBLES = keys.toArray(new String[0]);
-    }
 
     public UseHandCrank(float speed, int closeEnoughDist) {
         super(ImmutableMap.of(
@@ -223,8 +208,9 @@ class UseHandCrank extends MaidCheckRateTask {
 
             bubbleTimer++;
             if (bubbleTimer >= Config.BUBBLE_INTERVAL.get()){
-                int i = random.nextInt(CHAT_BUBBLES.length);
-                Component component = getComponent(maid, i);
+                String[] chatBubbles = DynamicLangKeys.getChatBubbles();
+                int i = random.nextInt(chatBubbles.length);
+                Component component = getComponent(maid, chatBubbles[i]);
                 maid.getChatBubbleManager().addChatBubble(TextChatBubbleData.type2(component));
                 bubbleTimer=0;
             }
@@ -232,8 +218,7 @@ class UseHandCrank extends MaidCheckRateTask {
 
     }
 
-    private static @NotNull Component getComponent(EntityMaid maid, int i) {
-        String messageKey = CHAT_BUBBLES[i];
+    private static @NotNull Component getComponent(EntityMaid maid, String messageKey) {
         Component component;
         Component ownerName = (maid.getOwner() != null)
                 ? maid.getOwner().getName()
