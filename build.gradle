@@ -197,3 +197,6 @@ idea {
         downloadJavadoc = true
     }
 }
+jar {
+    archiveFileName = "${mod_id}-${mod_version}-neoforge-${minecraft_version}.jar"
+}
