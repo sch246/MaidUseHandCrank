@@ -36,5 +36,4 @@
 ## License
 - Code: [MIT](https://www.mit.edu/~amini/LICENSE.md)
 - Assets: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-  - （虽然并没有）
 

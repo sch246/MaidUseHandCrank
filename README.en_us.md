@@ -36,4 +36,3 @@ Maids will continue to follow the player and may move out of interaction range (
 ## License
 - Code: [MIT](https://mit-license.org/)
 - Assets: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-  - (Although there aren't any)
