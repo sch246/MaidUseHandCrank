@@ -23,7 +23,7 @@ When enabled, maids will autonomously search for and use hand cranks within 8 bl
 
 Maids will continue to follow the player and may move out of interaction range (4 blocks, configurable). You can make them sit down (on cushions too) to work and avoid this situation.
 
-![Settings Interface](https://s2.loli.net/2025/09/13/NgJIOWHtlGRwx1s.png)
+![Settings Interface](https://s2.loli.net/2025/09/14/eriKjEh8amLD9lp.png)
 
 ## Thanks
 
