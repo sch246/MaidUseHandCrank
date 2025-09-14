@@ -19,7 +19,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import java.util.List;
 
 public class HandCrankTask implements IMaidTask {
-    private static  final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(MaidUseHandCrank.MODID, "hand_crank_task");
+    private static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(MaidUseHandCrank.MODID, "hand_crank_task");
 
     private static ItemStack ICON = null;
 
@@ -30,7 +30,7 @@ public class HandCrankTask implements IMaidTask {
 
     @Override
     public @NotNull ItemStack getIcon() {
-         //延迟加载图标，确保 Create Mod 的方块已经注册完毕
+        //延迟加载图标，确保 Create Mod 的方块已经注册完毕
         if (ICON == null) {
             // 获取 HandCrankBlock 的物品形式，并创建 ItemStack
             ICON = AllBlocks.HAND_CRANK.asStack();
@@ -47,22 +47,22 @@ public class HandCrankTask implements IMaidTask {
     @Override
     public @NotNull List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createBrainTasks(@NotNull EntityMaid maid) {
         MaidUseHandCrank.LOGGER.debug("为女仆创建手摇曲柄任务");
-        UseHandCrank crankHandleTask = new UseHandCrank(0.5f, Config.REACH_RADIUS.get());
+        UseHandCrank crankHandleTask = new UseHandCrank(0.5f);
         return Lists.newArrayList(Pair.of(Config.PRIORITY.get(), crankHandleTask));
     }
 
     @Override
     public boolean enableLookAndRandomWalk(@NotNull EntityMaid maid) {
-        return false;
+        return Config.RANDOM_WALK.get();
     }
 
-    @Override
-    public boolean workPointTask(@NotNull EntityMaid maid) {
-        return true;
-    }
+//    @Override
+//    public boolean workPointTask(@NotNull EntityMaid maid) {
+//        return true;
+//    }
 
-    @Override
-    public float searchRadius(@NotNull EntityMaid maid) {
-        return Config.SEARCH_RADIUS.get();
-    }
+//    @Override
+//    public float searchRadius(@NotNull EntityMaid maid) {
+//        return Config.SEARCH_RADIUS.get();
+//    }
 }

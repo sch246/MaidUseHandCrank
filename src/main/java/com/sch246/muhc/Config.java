@@ -22,9 +22,9 @@ public class Config {
             .defineInRange("priority", 5, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue SEARCH_RADIUS = BUILDER
-            .comment("The search distance of the hand crank\nThe task needs to be reset to take effect")
+            .comment("The search distance of the hand crank\n0 is auto\nThe task needs to be reset to take effect")
             .translation(translateKey("searchRadius"))
-            .defineInRange("searchRadius", 8, 0, Integer.MAX_VALUE);
+            .defineInRange("searchRadius", 0, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue REACH_RADIUS = BUILDER
             .comment("Interaction with the hand crank will only start when the distance is less than this\nThe task needs to be reset to take effect")
@@ -40,7 +40,18 @@ public class Config {
             .comment("How often to say something while cranking")
             .translation(translateKey("bubbleInterval"))
             .defineInRange("bubbleInterval", 600, 1, Integer.MAX_VALUE);
-//
+
+    public static final ModConfigSpec.BooleanValue CLAIMS_BEFOREHAND = BUILDER
+            .comment("The maid claims the target crank beforehand to stop others from using it")
+            .translation(translateKey("claims_beforehand"))
+            .define("claims_beforehand", true);
+
+    public static final ModConfigSpec.BooleanValue RANDOM_WALK = BUILDER
+            .comment("Allow maids to walk around randomly while working\nnote that work-related bubbles will not be triggered when maids move around freely\nThe task needs to be reset to take effect")
+            .translation(translateKey("RandomWalk"))
+            .define("RandomWalk", true);
+
+
 //    public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
 //            .comment("What you want the introduction message to be for the magic number")
 //            .define("magicNumberIntroduction", "The magic number is... ");
