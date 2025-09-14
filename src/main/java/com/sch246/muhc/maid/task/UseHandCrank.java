@@ -22,9 +22,11 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiRecord;
+import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
+import java.util.Optional;
 
 public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     private static final int MAX_DELAY_TIME = 60;
@@ -220,7 +222,11 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
     @javax.annotation.Nullable
     private BlockPos findCrankHandle(ServerLevel level, EntityMaid maid) {
-        BlockPos blockPos = maid.getBrainSearchPos();
+        BlockPos blockPos = maid.hasRestriction()
+                ? maid.getRestrictCenter()
+                : Optional.ofNullable(maid.getOwner())
+                .map(LivingEntity::getOnPos)
+                .orElse(maid.blockPosition());
         PoiManager poiManager = level.getPoiManager();
 
         int searchRadius = Config.SEARCH_RADIUS.get();
