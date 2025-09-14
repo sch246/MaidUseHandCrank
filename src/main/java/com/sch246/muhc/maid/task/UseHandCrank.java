@@ -222,22 +222,54 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
     @javax.annotation.Nullable
     private BlockPos findCrankHandle(ServerLevel level, EntityMaid maid) {
-        BlockPos blockPos = maid.hasRestriction()
-                ? maid.getRestrictCenter()
-                : Optional.ofNullable(maid.getOwner())
-                .map(LivingEntity::getOnPos)
-                .orElse(maid.blockPosition());
-        PoiManager poiManager = level.getPoiManager();
+        BlockPos result;
 
         int searchRadius = Config.SEARCH_RADIUS.get();
-        int range = (searchRadius == 0)
-                ? (int) maid.getRestrictRadius() + Config.REACH_RADIUS.get()
-                : searchRadius;
+        if (searchRadius != 0) {
+            BlockPos blockPos = maid.blockPosition();
+            MaidUseHandCrank.LOGGER.debug("default: 开始在 {} 周围 {} 格内搜索手摇曲柄POI...", blockPos, searchRadius);
+            result = findCrankHandleDefault(level, maid, blockPos, searchRadius);
+        } else {
+            int range = (int) maid.getRestrictRadius() + Config.REACH_RADIUS.get();
+            BlockPos blockPos = maid.hasRestriction()
+                    ? maid.getRestrictCenter()
+                    : Optional.ofNullable(maid.getOwner())
+                    .map(e -> new BlockPos(e.getBlockX(), e.getBlockY(), e.getBlockZ()))
+                    .orElse(maid.blockPosition());
+            MaidUseHandCrank.LOGGER.debug("auto: 开始在 {} 周围 {} 格内搜索手摇曲柄POI...", blockPos, range);
+            result = findCrankHandleAuto(level, maid, blockPos, range);
+        }
 
-        MaidUseHandCrank.LOGGER.debug("开始在 {} 周围 {} 格内搜索手摇曲柄POI...", blockPos, range);
+        MaidUseHandCrank.LOGGER.debug("手摇曲柄搜索完成，结果: {}", result);
+        return result;
+    }
+
+    @javax.annotation.Nullable
+    private BlockPos findCrankHandleDefault(ServerLevel level, EntityMaid maid, BlockPos blockPos, int range) {
+        PoiManager poiManager = level.getPoiManager();
 
         // 使用注册的POI类型查找手摇曲柄
-        BlockPos result = poiManager.getInRange(
+        return poiManager.getInRange(
+                        type -> type.value().equals(InitPoi.HAND_CRANK.get()),
+                        blockPos,
+                        range,
+                        PoiManager.Occupancy.ANY
+                )
+                .map(PoiRecord::getPos)
+                .filter(pos -> level.getBlockEntity(pos) instanceof HandCrankBlockEntity handCrank
+                        //inUse有点用，但不多，因为手柄在不使用的时候是没有这个值的
+                        && handCrank.inUse == 0
+                        && canLock(level, pos.immutable()))
+                .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
+                .orElse(null);
+    }
+
+    @javax.annotation.Nullable
+    private BlockPos findCrankHandleAuto(ServerLevel level, EntityMaid maid, BlockPos blockPos, int range) {
+        PoiManager poiManager = level.getPoiManager();
+
+        // 使用注册的POI类型查找手摇曲柄
+        return poiManager.getInRange(
                         type -> type.value().equals(InitPoi.HAND_CRANK.get()),
                         blockPos,
                         range,
@@ -248,12 +280,10 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                         //inUse有点用，但不多，因为手柄在不使用的时候是没有这个值的
                         && handCrank.inUse == 0
                         // 当 searchRadius 为 0 时始终通过，否则进行判断
-                        && (searchRadius == 0 || maid.isWithinRestriction(pos) || !outOfRange(maid, pos))
+                        && (pos.closerThan(blockPos, (int) maid.getRestrictRadius()) || !outOfRange(maid, pos))
                         && canLock(level, pos.immutable()))
                 .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
                 .orElse(null);
-        MaidUseHandCrank.LOGGER.debug("手摇曲柄搜索完成，结果: {}", result);
-        return result;
     }
 
     private void operateCrankHandle(ServerLevel level, EntityMaid maid, BlockPos pos) {
