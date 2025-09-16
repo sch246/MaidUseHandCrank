@@ -17,7 +17,7 @@ After adding this mod, a hand crank task will appear in the maid's task menu.
 
 ![Hand Crank Image](https://s2.loli.net/2025/09/13/jtRoi6OU2cumlfG.png)
 
-When enabled, the maid autonomously searches for an interactive hand crank to use, or the search radius can be set manually (by setting the search radius to a non-zero value, which may result in frequent back and forth)
+When enabled, the maid automatically searches for hand cranks to operate. The search radius defaults to 0 (auto-detect). You can set a custom radius, but the maid may repeatedly attempt to reach unreachable cranks, causing her to keep wandering back and forth.
 
 ![⑨ Using Hand Crank Image](https://s2.loli.net/2025/09/13/IJG8MVOjoeByRca.png)
 
