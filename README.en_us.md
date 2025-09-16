@@ -4,7 +4,7 @@ Allows Touhou Little Maid to use Create's Hand Crank
 
 <p align="center">
     <a href="README.md">简体中文</a> | 
-    <a href="#">English</a>
+    <a href="README.en_us.md">English</a>
 </p>
 
 ## Summary
@@ -17,13 +17,23 @@ After adding this mod, a hand crank task will appear in the maid's task menu.
 
 ![Hand Crank Image](https://s2.loli.net/2025/09/13/jtRoi6OU2cumlfG.png)
 
-When enabled, maids will autonomously search for and use hand cranks within 8 blocks (configurable).
+When enabled, the maid autonomously searches for an interactive hand crank to use, or the search radius can be set manually (by setting the search radius to a non-zero value, which may result in frequent back and forth)
 
 ![⑨ Using Hand Crank Image](https://s2.loli.net/2025/09/13/IJG8MVOjoeByRca.png)
 
-Maids will continue to follow the player and may move out of interaction range (4 blocks, configurable). You can make them sit down (on cushions too) to work and avoid this situation.
+The Maid will still continue to follow the player and walk around randomly as she works, and may be interrupted by going beyond the interaction distance (4 blocks, configurable) as a result, but as long as there is a crank within range, the Maid will find one later and continue working.
+
+Random walking can be turned off in the settings, but the maid will still stop working because of following the player or for other reasons (such as exceeding the working time).
+
+Making them sit down while they work (cushions work too) can force them to keep working.
 
 ![Settings Interface](https://s2.loli.net/2025/09/14/eriKjEh8amLD9lp.png)
+
+## Supplementary
+
+"smarter maid" is turned on by default, which allows the maid to target cranks in advance to prevent scrambling.
+
+"random walk" is on by default, when the maid will not trigger bubbles (unless sitting)
 
 ## Thanks
 
