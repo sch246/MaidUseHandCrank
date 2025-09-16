@@ -26,6 +26,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     private static final int MAX_DELAY_TIME = 60;
@@ -65,7 +67,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 //        }
 
         // 每次运行都会重新检查最近的手摇曲柄
-        BlockPos pos = findCrankHandle(level, maid);
+        BlockPos pos = findCrankHandle(maid, level);
         if (pos == null) {
             if (crankPos != null) {
                 // 存储的pos不可达，释放
@@ -220,14 +222,16 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
 
     @javax.annotation.Nullable
-    private BlockPos findCrankHandle(ServerLevel level, EntityMaid maid) {
+    private BlockPos findCrankHandle(EntityMaid maid, ServerLevel level) {
         BlockPos result;
 
         int searchRadius = Config.SEARCH_RADIUS.get();
         if (searchRadius != 0) {
             BlockPos blockPos = maid.blockPosition();
             MaidUseHandCrank.LOGGER.debug("default: 开始在 {} 周围 {} 格内搜索手摇曲柄POI...", blockPos, searchRadius);
-            result = findCrankHandleDefault(level, maid, blockPos, searchRadius);
+            result = getNearestCrankPosition(
+                    maid, level, blockPos, searchRadius,
+                    pos -> true);
         } else {
             int range = (int) maid.getRestrictRadius() + Config.REACH_RADIUS.get();
             BlockPos blockPos = maid.hasRestriction()
@@ -236,7 +240,10 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                     .map(e -> new BlockPos(e.getBlockX(), e.getBlockY(), e.getBlockZ()))
                     .orElse(maid.blockPosition());
             MaidUseHandCrank.LOGGER.debug("auto: 开始在 {} 周围 {} 格内搜索手摇曲柄POI...", blockPos, range);
-            result = findCrankHandleAuto(level, maid, blockPos, range);
+            result = getNearestCrankPosition(
+                    maid, level, blockPos, range,
+                    pos -> (pos.closerThan(blockPos, (int) maid.getRestrictRadius())
+                            || !outOfRange(maid, pos)));
         }
 
         MaidUseHandCrank.LOGGER.debug("手摇曲柄搜索完成，结果: {}", result);
@@ -244,43 +251,20 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     }
 
     @javax.annotation.Nullable
-    private BlockPos findCrankHandleDefault(ServerLevel level, EntityMaid maid, BlockPos blockPos, int range) {
-        PoiManager poiManager = level.getPoiManager();
-
+    private BlockPos getNearestCrankPosition(EntityMaid maid, ServerLevel level, BlockPos center, int range, Predicate<BlockPos> blockPredicate) {
         // 使用注册的POI类型查找手摇曲柄
-        return poiManager.getInRange(
+        return level.getPoiManager()
+                .getInRange(
                         type -> type.value().equals(InitPoi.HAND_CRANK.get()),
-                        blockPos,
+                        center,
                         range,
                         PoiManager.Occupancy.ANY
                 )
                 .map(PoiRecord::getPos)
                 .filter(pos -> level.getBlockEntity(pos) instanceof HandCrankBlockEntity handCrank
-                        //inUse有点用，但不多，因为手柄在不使用的时候是没有这个值的
                         && handCrank.inUse == 0
                         && canLock(level, pos.immutable()))
-                .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
-                .orElse(null);
-    }
-
-    @javax.annotation.Nullable
-    private BlockPos findCrankHandleAuto(ServerLevel level, EntityMaid maid, BlockPos blockPos, int range) {
-        PoiManager poiManager = level.getPoiManager();
-
-        // 使用注册的POI类型查找手摇曲柄
-        return poiManager.getInRange(
-                        type -> type.value().equals(InitPoi.HAND_CRANK.get()),
-                        blockPos,
-                        range,
-                        PoiManager.Occupancy.ANY
-                )
-                .map(PoiRecord::getPos)
-                .filter(pos -> level.getBlockEntity(pos) instanceof HandCrankBlockEntity handCrank
-                        //inUse有点用，但不多，因为手柄在不使用的时候是没有这个值的
-                        && handCrank.inUse == 0
-                        // 当 searchRadius 为 0 时始终通过，否则进行判断
-                        && (pos.closerThan(blockPos, (int) maid.getRestrictRadius()) || !outOfRange(maid, pos))
-                        && canLock(level, pos.immutable()))
+                .filter(blockPredicate)
                 .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
                 .orElse(null);
     }

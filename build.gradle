@@ -131,12 +131,12 @@ repositories {
 
 dependencies {
     // 添加 Create 依赖
+    implementation "curse.maven:create-328085:6641610"
     compileOnly "com.tterrag.registrate:Registrate:$registrate_version"
-    compileOnly "curse.maven:create-328085:6641610"
-    compileOnly("net.createmod.ponder:Ponder-NeoForge-$minecraft_version:$ponder_version")
+    compileOnly "net.createmod.ponder:Ponder-NeoForge-$minecraft_version:$ponder_version"
 
     // 添加 Touhou Little Maid 依赖
-    compileOnly "curse.maven:touhou-little-maid-355044:6988538"
+    implementation "curse.maven:touhou-little-maid-355044:6988538"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
