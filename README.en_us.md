@@ -9,7 +9,7 @@ Allows Touhou Little Maid to use Create's Hand Crank
 
 ## Summary
 
-This mod is an addon for Touhou Little Maid/Create. Simply adds the functionality for maids to operate hand cranks.
+This mod is an addon for Touhou Little Maid/Create. It simply adds the functionality for maids to operate hand cranks.
 
 ## Usage
 
@@ -21,7 +21,7 @@ When enabled, the maid automatically searches for hand cranks to operate. The se
 
 ![⑨ Using Hand Crank Image](https://s2.loli.net/2025/09/13/IJG8MVOjoeByRca.png)
 
-The Maid will still continue to follow the player and walk around randomly as she works, and may be interrupted by going beyond the interaction distance (4 blocks, configurable) as a result, but as long as there is a crank within range, the Maid will find one later and continue working.
+The maid will still continue to follow the player and walk around randomly as she works, and may be interrupted by going beyond the interaction distance (4 blocks, configurable) as a result, but as long as there is a crank within range, the maid will find one later and continue working.
 
 Random walking can be turned off in the settings, but the maid will still stop working because of following the player or for other reasons (such as exceeding the working time).
 
@@ -33,7 +33,7 @@ Making them sit down while they work (cushions work too) can force them to keep 
 
 "smarter maid" is turned on by default, which allows the maid to target cranks in advance to prevent scrambling.
 
-"random walk" is on by default, when the maid will not trigger bubbles (unless sitting)
+"random walk" is on by default, in which case the maid will not trigger bubbles (unless sitting)
 
 ## Thanks
 
