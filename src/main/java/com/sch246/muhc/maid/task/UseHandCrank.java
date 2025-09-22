@@ -330,7 +330,8 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         int tick = Config.OPERATION_DURATION.get();
 
         if (handCrank instanceof IMaidHandCrank maidHandCrank) {
-            float speed = handCrank.getTheoreticalSpeed();
+//            float speed = handCrank.getTheoreticalSpeed();
+            float speed = 32;
             float baseStress = (float) Config.BASE_STRESS.get() / speed;
             float extraStress = (float) Config.STREES_PER_FAVORABILITY.get() / speed;
             maidHandCrank.muhc$turn(
