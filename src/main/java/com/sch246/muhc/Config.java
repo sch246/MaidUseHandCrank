@@ -12,45 +12,73 @@ public class Config {
         return TRANSLATE_KEY + "." + key;
     }
 
-//    public static final ModConfigSpec.BooleanValue LOG_DIRT_BLOCK = BUILDER
-//            .comment("Whether to log the dirt block on common setup")
-//            .define("logDirtBlock", true);
+    static {
+        // 基础设置
+        BUILDER.push("basic");
+        PRIORITY = BUILDER
+                .translation(translateKey("priority"))
+                .defineInRange("priority", 5, 0, Integer.MAX_VALUE);
+        BUILDER.pop();
 
-    public static final ModConfigSpec.IntValue PRIORITY = BUILDER
-            .comment("The priority of hand crank tasks\nThe task needs to be reset to take effect")
-            .translation(translateKey("priority"))
-            .defineInRange("priority", 5, 0, Integer.MAX_VALUE);
+        // 搜索范围设置
+        BUILDER.push("search");
+        CENTER_SEARCH_RADIUS = BUILDER
+                .translation(translateKey("centerSearchRadius"))
+                .defineInRange("centerSearchRadius", 0, 0, Integer.MAX_VALUE);
+        MAID_SEARCH_RADIUS = BUILDER
+                .translation(translateKey("maidSearchRadius"))
+                .defineInRange("maidSearchRadius", 0, 0, Integer.MAX_VALUE);
+        REACH_RADIUS = BUILDER
+                .translation(translateKey("reachRadius"))
+                .defineInRange("reachRadius", 4, 0, Integer.MAX_VALUE);
+        BUILDER.pop();
 
-    public static final ModConfigSpec.IntValue SEARCH_RADIUS = BUILDER
-            .comment("The search distance of the hand crank\n0 is auto\nThe task needs to be reset to take effect")
-            .translation(translateKey("searchRadius"))
-            .defineInRange("searchRadius", 0, 0, Integer.MAX_VALUE);
+        // 行为设置
+        BUILDER.push("behavior");
+        CLAIMS_BEFOREHAND = BUILDER
+                .translation(translateKey("claimsBeforehand"))
+                .define("claimsBeforehand", true);
+        RANDOM_WALK = BUILDER
+                .translation(translateKey("randomWalk"))
+                .define("randomWalk", true);
+        BUILDER.pop();
 
-    public static final ModConfigSpec.IntValue REACH_RADIUS = BUILDER
-            .comment("Interaction with the hand crank will only start when the distance is less than this\nThe task needs to be reset to take effect")
-            .translation(translateKey("reachRadius"))
-            .defineInRange("reachRadius", 4, 0, Integer.MAX_VALUE);
+        // 操作时间设置
+        BUILDER.push("timing");
+        BUBBLE_INTERVAL = BUILDER
+                .translation(translateKey("bubbleInterval"))
+                .defineInRange("bubbleInterval", 600, 1, Integer.MAX_VALUE);
+        OPERATION_INTERVAL = BUILDER
+                .translation(translateKey("operationInterval"))
+                .defineInRange("operationInterval", 9, 1, Integer.MAX_VALUE);
+        OPERATION_DURATION = BUILDER
+                .translation(translateKey("operationDuration"))
+                .defineInRange("operationDuration", 11, 1, Integer.MAX_VALUE);
+        BUILDER.pop();
 
-    public static final ModConfigSpec.IntValue OPERATION_INTERVAL = BUILDER
-            .comment("Lower values mean faster speed")
-            .translation(translateKey("operationInterval"))
-            .defineInRange("operationInterval", 10, 1, Integer.MAX_VALUE);
+        // 压力和好感度设置
+        BUILDER.push("stress");
+        BASE_STRESS = BUILDER
+                .translation(translateKey("baseStress"))
+                .defineInRange("baseStress", 256, 1, Integer.MAX_VALUE);
+        STREES_PER_FAVORABILITY = BUILDER
+                .translation(translateKey("stressPerFavorability"))
+                .defineInRange("stressPerFavorability", 10, 0, Integer.MAX_VALUE);
+        BUILDER.pop();
+    }
 
-    public static final ModConfigSpec.IntValue BUBBLE_INTERVAL = BUILDER
-            .comment("How often to say something while cranking")
-            .translation(translateKey("bubbleInterval"))
-            .defineInRange("bubbleInterval", 600, 1, Integer.MAX_VALUE);
-
-    public static final ModConfigSpec.BooleanValue CLAIMS_BEFOREHAND = BUILDER
-            .comment("The maid claims the target crank beforehand to stop others from using it")
-            .translation(translateKey("claims_beforehand"))
-            .define("claims_beforehand", true);
-
-    public static final ModConfigSpec.BooleanValue RANDOM_WALK = BUILDER
-            .comment("Allow maids to walk around randomly while working\nnote that work-related bubbles will not be triggered when maids move around freely\nThe task needs to be reset to take effect")
-            .translation(translateKey("RandomWalk"))
-            .define("RandomWalk", true);
-
+    // 声明配置项
+    public static final ModConfigSpec.IntValue PRIORITY;
+    public static final ModConfigSpec.IntValue CENTER_SEARCH_RADIUS;
+    public static final ModConfigSpec.IntValue MAID_SEARCH_RADIUS;
+    public static final ModConfigSpec.IntValue REACH_RADIUS;
+    public static final ModConfigSpec.IntValue BUBBLE_INTERVAL;
+    public static final ModConfigSpec.BooleanValue CLAIMS_BEFOREHAND;
+    public static final ModConfigSpec.BooleanValue RANDOM_WALK;
+    public static final ModConfigSpec.IntValue OPERATION_INTERVAL;
+    public static final ModConfigSpec.IntValue OPERATION_DURATION;
+    public static final ModConfigSpec.IntValue BASE_STRESS;
+    public static final ModConfigSpec.IntValue STREES_PER_FAVORABILITY;
 
 //    public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
 //            .comment("What you want the introduction message to be for the magic number")

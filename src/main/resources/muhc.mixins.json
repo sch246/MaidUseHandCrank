@@ -1,0 +1,14 @@
+{
+    "required": true,
+    "package": "com.sch246.muhc.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [
+        "HandCrankBlockEntityMixin"
+    ],
+    "injectors": {
+      "defaultRequire": 1
+    },
+    "overwrites": {
+      "requireAnnotations": true
+    }
+  }

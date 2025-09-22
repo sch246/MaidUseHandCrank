@@ -137,6 +137,8 @@ dependencies {
 
     // 添加 Touhou Little Maid 依赖
     implementation "curse.maven:touhou-little-maid-355044:6988538"
+
+    runtimeOnly fileTree(dir:'mods', include: ['*.jar'])
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

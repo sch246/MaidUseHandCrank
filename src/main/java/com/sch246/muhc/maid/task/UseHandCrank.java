@@ -9,10 +9,12 @@ import com.sch246.muhc.Config;
 import com.sch246.muhc.MaidUseHandCrank;
 import com.sch246.muhc.create.InitPoi;
 import com.sch246.muhc.util.DynamicLangKeys;
+import com.sch246.muhc.util.IMaidHandCrank;
 import com.sch246.muhc.util.IUniPosOwner;
 import com.simibubi.create.content.kinetics.crank.HandCrankBlock;
 import com.simibubi.create.content.kinetics.crank.HandCrankBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -22,23 +24,23 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiRecord;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.level.ChunkPos;
 
 import java.util.Comparator;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
 
 public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     private static final int MAX_DELAY_TIME = 60;
-
 
     private final float speed;
     private int operationTimer = 0;
     private int bubbleTimer = 0;
     private final RandomSource random = RandomSource.create();
     private BlockPos crankPos;
-    private boolean shouldTurnBackwards = false;
+    private boolean back = false;
 
     public UseHandCrank(float speed) {
         super(ImmutableMap.of(
@@ -54,17 +56,17 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     }
 
     @Override
-    protected boolean checkExtraStartConditions(@NotNull ServerLevel level, @NotNull EntityMaid maid) {
+    protected boolean checkExtraStartConditions(@Nonnull ServerLevel level, @Nonnull EntityMaid maid) {
         // 这段必定在start前检查
         if (!super.checkExtraStartConditions(level, maid)) {
             return false;
         }
 
         // 女仆无法移动不会导致任务无法启动，坐着开始很正常
-//        if (!maid.canBrainMoving()) {
-//            MaidUseHandCrank.LOGGER.info("女仆无法移动，任务无法启动");
-//            return false;
-//        }
+        // if (!maid.canBrainMoving()) {
+        // MaidUseHandCrank.LOGGER.info("女仆无法移动，任务无法启动");
+        // return false;
+        // }
 
         // 每次运行都会重新检查最近的手摇曲柄
         BlockPos pos = findCrankHandle(maid, level);
@@ -99,7 +101,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
         if (outOfRange(maid, crankPos)) {
             MaidUseHandCrank.LOGGER.debug("发现手摇曲柄，但距离太远，开始移动...");
-            BehaviorUtils.setWalkAndLookTargetMemories(maid, crankPos, speed, Config.REACH_RADIUS.get());
+            BehaviorUtils.setWalkAndLookTargetMemories(maid, getFrontPos(level, crankPos), speed, 1);
             this.setNextCheckTickCount(5);
             return false;
         }
@@ -109,7 +111,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     }
 
     @Override
-    protected void start(@NotNull ServerLevel level, @NotNull EntityMaid maid, long gameTime) {
+    protected void start(@Nonnull ServerLevel level, @Nonnull EntityMaid maid, long gameTime) {
         MaidUseHandCrank.LOGGER.debug("手摇曲柄任务：开始执行");
         if (crankPos == null) {
             MaidUseHandCrank.LOGGER.debug("start:坐标不存在");
@@ -117,19 +119,34 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         }
         // 让女仆面向曲柄
         MaidUseHandCrank.LOGGER.debug("改变女仆的朝向...");
-        maid.getLookControl().setLookAt(crankPos.getX() + 0.5, crankPos.getY() + 0.5, crankPos.getZ() + 0.5);
+        maid.getLookControl().setLookAt(crankPos.getCenter());
+    }
+
+    /**
+     * 根据手摇曲柄的当前状态，计算其前方方块的坐标
+     *
+     * @param level 输入的维度
+     * @param pos 输入的坐标
+     * @return frontPos 手摇曲柄前方的坐标，若当前不是手摇曲柄，返回原坐标
+     */
+    private BlockPos getFrontPos(@Nonnull ServerLevel level, BlockPos pos) {
+        try {
+            return pos.relative(level.getBlockState(pos).getValue(HandCrankBlock.FACING));
+        } catch (IllegalArgumentException e) {
+            return pos;
+        }
     }
 
     @Override
-    protected boolean canStillUse(@NotNull ServerLevel level, @NotNull EntityMaid maid, long gameTime) {
+    protected boolean canStillUse(@Nonnull ServerLevel level, @Nonnull EntityMaid maid, long gameTime) {
         // 这段必定在tick前检查
-//        MaidUseHandCrank.LOGGER.debug("女仆已在操作状态，重新验证目标...");
+        // MaidUseHandCrank.LOGGER.debug("女仆已在操作状态，重新验证目标...");
 
         // 女仆无法移动不会导致任务结束，坐下开始任务不是很正常吗
-//        if (!maid.canBrainMoving()) {
-//            MaidUseHandCrank.LOGGER.info("女仆无法移动，任务结束");
-//            return false;
-//        }
+        // if (!maid.canBrainMoving()) {
+        // MaidUseHandCrank.LOGGER.info("女仆无法移动，任务结束");
+        // return false;
+        // }
 
         if (crankPos == null) {
             MaidUseHandCrank.LOGGER.debug("位置已丢失，停止操作");
@@ -155,8 +172,8 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     }
 
     @Override
-    protected void tick(@NotNull ServerLevel level, @NotNull EntityMaid maid, long gameTime) {
-//        MaidUseHandCrank.LOGGER.debug("手摇曲柄任务 tick - 处于操作状态");
+    protected void tick(@Nonnull ServerLevel level, @Nonnull EntityMaid maid, long gameTime) {
+        // MaidUseHandCrank.LOGGER.debug("手摇曲柄任务 tick - 处于操作状态");
         if (crankPos == null) {
             MaidUseHandCrank.LOGGER.debug("tick:坐标不存在");
             return;
@@ -164,13 +181,12 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
         // 开始操作状态
         --operationTimer;
-        maid.getLookControl().setLookAt(crankPos.getX() + 0.5, crankPos.getY() + 0.5, crankPos.getZ() + 0.5);
+        maid.getLookControl().setLookAt(crankPos.getCenter());
         if (operationTimer <= 0) {
-//            MaidUseHandCrank.LOGGER.debug("执行一次曲柄操作");
+            // MaidUseHandCrank.LOGGER.debug("执行一次曲柄操作");
             operationTimer = Config.OPERATION_INTERVAL.get();
             operateCrankHandle(level, maid, crankPos);
         }
-
 
         if (!Config.RANDOM_WALK.get() || !maid.canBrainMoving()) {
             // 如果不允许到处走或者不能移动
@@ -190,7 +206,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         return (r / 2) + random.nextInt(r);
     }
 
-    private static @NotNull Component getComponent(EntityMaid maid, String messageKey) {
+    private static @Nonnull Component getComponent(EntityMaid maid, String messageKey) {
         Component component;
         Component ownerName = (maid.getOwner() != null)
                 ? maid.getOwner().getName()
@@ -207,7 +223,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     }
 
     @Override
-    protected void stop(@NotNull ServerLevel level, @NotNull EntityMaid maid, long gameTime) {
+    protected void stop(@Nonnull ServerLevel level, @Nonnull EntityMaid maid, long gameTime) {
         MaidUseHandCrank.LOGGER.debug("手摇曲柄任务停止，清除相关记忆");
         operationTimer = 0;
         // 释放已声明的位置，释放失败也问题不大，因为任务是弱引用
@@ -220,93 +236,124 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
     }
 
-
     @javax.annotation.Nullable
     private BlockPos findCrankHandle(EntityMaid maid, ServerLevel level) {
-        BlockPos result;
 
-        int searchRadius = Config.SEARCH_RADIUS.get();
-        if (searchRadius != 0) {
-            BlockPos blockPos = maid.blockPosition();
-            MaidUseHandCrank.LOGGER.debug("default: 开始在 {} 周围 {} 格内搜索手摇曲柄POI...", blockPos, searchRadius);
-            result = getNearestCrankPosition(
-                    maid, level, blockPos, searchRadius,
-                    pos -> true);
-        } else {
-            int range = (int) maid.getRestrictRadius() + Config.REACH_RADIUS.get();
-            BlockPos blockPos = maid.hasRestriction()
-                    ? maid.getRestrictCenter()
-                    : Optional.ofNullable(maid.getOwner())
-                    .map(e -> new BlockPos(e.getBlockX(), e.getBlockY(), e.getBlockZ()))
-                    .orElse(maid.blockPosition());
-            MaidUseHandCrank.LOGGER.debug("auto: 开始在 {} 周围 {} 格内搜索手摇曲柄POI...", blockPos, range);
-            result = getNearestCrankPosition(
-                    maid, level, blockPos, range,
-                    pos -> (pos.closerThan(blockPos, (int) maid.getRestrictRadius())
-                            || !outOfRange(maid, pos)));
+        int centerRadius = Config.CENTER_SEARCH_RADIUS.get();
+        if (centerRadius == 0) {
+            centerRadius = (int) maid.getRestrictRadius();
         }
+        BlockPos centerPos = maid.hasRestriction()
+                ? maid.getRestrictCenter()
+                : Optional.ofNullable(maid.getOwner())
+                        .map(e -> new BlockPos(e.getBlockX(), e.getBlockY(), e.getBlockZ()))
+                        .orElse(maid.blockPosition());
+
+        int maidRadius = Config.MAID_SEARCH_RADIUS.get();
+        if (maidRadius == 0) {
+            maidRadius = Config.REACH_RADIUS.get();
+        }
+        BlockPos maidPos = maid.blockPosition();
+
+        MaidUseHandCrank.LOGGER.debug("default: 开始在 {} 周围 {} 格，以及 {} 周围 {} 格内搜索手摇曲柄POI...", centerPos, centerRadius, maidPos, maidRadius);
+        BlockPos result = getCrankInDoubleCircleUnion(level, centerPos, centerRadius, maidPos, maidRadius)
+                .map(PoiRecord::getPos)
+                .filter(pos -> level.getBlockEntity(pos) instanceof HandCrankBlockEntity handCrank
+                        && handCrank.inUse == 0
+                        && canLock(level, pos.immutable()))
+                .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
+                .orElse(null);
 
         MaidUseHandCrank.LOGGER.debug("手摇曲柄搜索完成，结果: {}", result);
         return result;
     }
 
-    @javax.annotation.Nullable
-    private BlockPos getNearestCrankPosition(EntityMaid maid, ServerLevel level, BlockPos center, int range, Predicate<BlockPos> blockPredicate) {
-        // 使用注册的POI类型查找手摇曲柄
-        return level.getPoiManager()
-                .getInRange(
+    public Stream<PoiRecord> getCrankInDoubleCircleUnion(ServerLevel level,
+            BlockPos center1, int radius1,
+            BlockPos center2, int radius2) {
+        // 计算包含两个圆的最小方形区域
+        int minX = Math.min(center1.getX() - radius1, center2.getX() - radius2);
+        int maxX = Math.max(center1.getX() + radius1, center2.getX() + radius2);
+        int minZ = Math.min(center1.getZ() - radius1, center2.getZ() - radius2);
+        int maxZ = Math.max(center1.getZ() + radius1, center2.getZ() + radius2);
+
+        // 计算需要检查的区块范围
+        int minChunkX = Math.floorDiv(minX, 16);
+        int maxChunkX = Math.floorDiv(maxX, 16);
+        int minChunkZ = Math.floorDiv(minZ, 16);
+        int maxChunkZ = Math.floorDiv(maxZ, 16);
+
+        // 预计算距离平方以避免重复计算
+        int radiusSquared1 = radius1 * radius1;
+        int radiusSquared2 = radius2 * radius2;
+
+        PoiManager poiManager = level.getPoiManager();
+
+        return ChunkPos.rangeClosed(new ChunkPos(minChunkX, minChunkZ), new ChunkPos(maxChunkX, maxChunkZ))
+                .flatMap(chunkPos -> poiManager.getInChunk(
                         type -> type.value().equals(InitPoi.HAND_CRANK.get()),
-                        center,
-                        range,
-                        PoiManager.Occupancy.ANY
-                )
-                .map(PoiRecord::getPos)
-                .filter(pos -> level.getBlockEntity(pos) instanceof HandCrankBlockEntity handCrank
-                        && handCrank.inUse == 0
-                        && canLock(level, pos.immutable()))
-                .filter(blockPredicate)
-                .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
-                .orElse(null);
+                        chunkPos, PoiManager.Occupancy.ANY))
+                .filter(poiRecord -> {
+                    BlockPos pos = poiRecord.getPos();
+                    // 检查是否在任一圆内
+                    return pos.distSqr(center1) <= radiusSquared1 ||
+                            pos.distSqr(center2) <= radiusSquared2;
+                });
     }
 
+
+    private int lastFavorability = -1;
+
     private void operateCrankHandle(ServerLevel level, EntityMaid maid, BlockPos pos) {
-//        MaidUseHandCrank.LOGGER.debug("女仆 {} 正在操作位于 {} 的手摇曲柄", maid.getName().getString(), pos);
+        // MaidUseHandCrank.LOGGER.debug("女仆 {} 正在操作位于 {} 的手摇曲柄",
+        // maid.getName().getString(), pos);
 
         if (!(level.getBlockEntity(pos) instanceof HandCrankBlockEntity handCrank)) {
             MaidUseHandCrank.LOGGER.debug("未找到手摇曲柄的方块实体");
             return;
         }
 
+        // ------------ 是否反转 ------------
 
         if (handCrank.getSpeed() != 0.0F) {
             // 如果检测到旋转，那么会更新旋转方向
-            shouldTurnBackwards = shouldTurnBackwardsToContinue(handCrank);
+            back = handCrank.getBlockState()
+                    .getValue(HandCrankBlock.FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE
+                    ? handCrank.getSpeed() < 0
+                    : handCrank.getSpeed() > 0;
         }
 
-        MaidUseHandCrank.LOGGER.debug("{} 当前方向 {}", maid.getName().getString(), shouldTurnBackwards ? "逆向" : "正向");
+        MaidUseHandCrank.LOGGER.debug("{} 当前方向 {}", maid.getName().getString(), back ? "逆向" : "正向");
 
-        handCrank.turn(shouldTurnBackwards);
+        // ------------ 好感度加应力 ------------
+
+        int tick = Config.OPERATION_DURATION.get();
+
+        if (handCrank instanceof IMaidHandCrank maidHandCrank) {
+            float baseStress = (float)Config.BASE_STRESS.get()/32;
+            float extraStress = (float)Config.STREES_PER_FAVORABILITY.get()/32;
+            maidHandCrank.muhc$turn(
+                    (int) (baseStress + maid.getFavorability() * extraStress),
+                    tick
+            );
+        }
+
+        // ------------ 原版turn ------------
+
+        boolean update = handCrank.getGeneratedSpeed() == 0.0F
+                || back != handCrank.backwards
+                || lastFavorability != maid.getFavorability();
+        lastFavorability = maid.getFavorability();
+
+        handCrank.inUse = tick;
+        handCrank.backwards = back;
+        if (update && !level.isClientSide) {
+            handCrank.updateGeneratedRotation();
+        }
+
+        // ------------ 女仆动画 ------------
+
         maid.swing(InteractionHand.MAIN_HAND);
     }
 
-    /**
-     * 根据手摇曲柄的当前状态，计算出为了让其继续旋转应该传入 turn() 方法的布尔值。
-     * <p>
-     * 这是因为 Create Mod 的手摇曲柄的旋转方向 (getSpeed()的正负)
-     * 取决于它的朝向 (FACING) 和内部的 backwards 状态。
-     * 这个方法逆向了这个逻辑，以确保女仆总是顺着当前方向转动。
-     *
-     * @param handCrank The HandCrankBlockEntity instance.
-     * @return true 如果应该调用 turn(true)，否则 false.
-     */
-    private boolean shouldTurnBackwardsToContinue(HandCrankBlockEntity handCrank) {
-        return switch (handCrank.getBlockState().getValue(HandCrankBlock.FACING)) {
-            case UP, EAST, SOUTH ->
-                // 对于这些方向, speed < 0 意味着 backwards=true, 所以要继续就得传入true
-                    handCrank.getSpeed() < 0;
-            default -> // NORTH, WEST, DOWN
-                // 对于这些方向, speed > 0 意味着 backwards=true, 所以要继续就得传入true
-                    handCrank.getSpeed() > 0;
-        };
-    }
 }

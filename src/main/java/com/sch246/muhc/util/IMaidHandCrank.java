@@ -1,0 +1,8 @@
+package com.sch246.muhc.util;
+
+/*
+ * 参见 com.sch246.muhc.create.HandCrankBlockEntityMixin
+ */
+public interface IMaidHandCrank {
+    public void muhc$turn(int stress, int tick);
+}
