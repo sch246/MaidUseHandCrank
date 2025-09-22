@@ -1,6 +1,6 @@
 package com.sch246.muhc.mixin;
 
-import com.sch246.muhc.MaidUseHandCrank;
+//import com.sch246.muhc.MaidUseHandCrank;
 import com.sch246.muhc.util.IMaidHandCrank;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.crank.HandCrankBlockEntity;
@@ -27,8 +27,8 @@ public abstract class HandCrankBlockEntityMixin extends GeneratingKineticBlockEn
     @Unique
     private int muhc$tick = 0;
 
-    @Shadow
-    public boolean backwards;
+//    @Shadow
+//    public boolean backwards;
 
     @Shadow public abstract float getGeneratedSpeed();
 
