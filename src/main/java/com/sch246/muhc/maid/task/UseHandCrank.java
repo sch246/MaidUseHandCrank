@@ -126,7 +126,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
      * 根据手摇曲柄的当前状态，计算其前方方块的坐标
      *
      * @param level 输入的维度
-     * @param pos 输入的坐标
+     * @param pos   输入的坐标
      * @return frontPos 手摇曲柄前方的坐标，若当前不是手摇曲柄，返回原坐标
      */
     private BlockPos getFrontPos(@Nonnull ServerLevel level, BlockPos pos) {
@@ -330,8 +330,9 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         int tick = Config.OPERATION_DURATION.get();
 
         if (handCrank instanceof IMaidHandCrank maidHandCrank) {
-            float baseStress = (float)Config.BASE_STRESS.get()/32;
-            float extraStress = (float)Config.STREES_PER_FAVORABILITY.get()/32;
+            float speed = handCrank.getTheoreticalSpeed();
+            float baseStress = (float) Config.BASE_STRESS.get() / speed;
+            float extraStress = (float) Config.STREES_PER_FAVORABILITY.get() / speed;
             maidHandCrank.muhc$turn(
                     (int) (baseStress + maid.getFavorability() * extraStress),
                     tick

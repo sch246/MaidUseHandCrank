@@ -4,9 +4,11 @@
   "muhc.configuration.section.muhc.common.toml": "MaidUseHandCrank Configs",
   "muhc.configuration.section.muhc.common.toml.title": "MaidUseHandCrank Configs",
 
+  "muhc.configuration.basic": "Basic",
   "muhc.configuration.priority": "Task Priority",
   "muhc.configuration.priority.tooltip": "The priority of hand crank tasks\nThe task needs to be reset to take effect",
 
+  "muhc.configuration.range": "Range",
   "muhc.configuration.centerSearchRadius": "Center Search Radius",
   "muhc.configuration.centerSearchRadius.tooltip": "Search radius for hand cranks centered around the work center\n0 is auto",
   "muhc.configuration.maidSearchRadius": "Maid Search Radius",
@@ -14,11 +16,13 @@
   "muhc.configuration.reachRadius": "Reach Radius",
   "muhc.configuration.reachRadius.tooltip": "Beyond this distance, interaction with the hand crank will cease.",
 
+  "muhc.configuration.behavior": "Behavior",
   "muhc.configuration.claimsBeforehand": "Smarter Maid",
   "muhc.configuration.claimsBeforehand.tooltip": "The maid claims the target crank beforehand to stop others from using it",
   "muhc.configuration.randomWalk": "Random Walk",
   "muhc.configuration.randomWalk.tooltip": "Allow maids to walk around randomly while working\nNote that work-related bubbles will not be triggered when maids move around freely",
 
+  "muhc.configuration.timing": "Timing",
   "muhc.configuration.bubbleInterval": "Chat Bubble Interval (tick)",
   "muhc.configuration.bubbleInterval.tooltip": "How often to say something while cranking (T±0.5T)",
   "muhc.configuration.operationInterval": "Operation Interval (tick)",
@@ -26,6 +30,7 @@
   "muhc.configuration.operationDuration": "Operation Duration (ticks)",
   "muhc.configuration.operationDuration.tooltip": "Determines the duration of crank operation per interaction",
 
+  "muhc.configuration.stress": "Stress",
   "muhc.configuration.baseStress": "Base Stress",
   "muhc.configuration.baseStress.tooltip": "Base stress generated when shaking the handle with a maid at zero favorability",
   "muhc.configuration.stressPerFavorability": "Stress Increment",

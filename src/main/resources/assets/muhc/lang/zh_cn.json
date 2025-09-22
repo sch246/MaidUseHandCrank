@@ -4,9 +4,11 @@
   "muhc.configuration.section.muhc.common.toml": "女仆摇曲柄 设置",
   "muhc.configuration.section.muhc.common.toml.title": "女仆摇曲柄 设置",
 
+  "muhc.configuration.basic": "通用",
   "muhc.configuration.priority": "任务优先级",
   "muhc.configuration.priority.tooltip": "手摇曲柄任务的优先级\n需要重新设置任务以生效",
 
+  "muhc.configuration.range": "范围",
   "muhc.configuration.centerSearchRadius": "中心搜索半径",
   "muhc.configuration.centerSearchRadius.tooltip": "以工作中心为中心的手摇曲柄搜索半径\n0为自动",
   "muhc.configuration.maidSearchRadius": "女仆搜索半径",
@@ -14,11 +16,13 @@
   "muhc.configuration.reachRadius": "交互距离",
   "muhc.configuration.reachRadius.tooltip": "大于此距离会停止与手摇曲柄交互",
 
+  "muhc.configuration.behavior": "行为",
   "muhc.configuration.claimsBeforehand": "聪明女仆",
   "muhc.configuration.claimsBeforehand.tooltip": "女仆会提前锁定目标曲柄以防止争抢",
   "muhc.configuration.randomWalk": "随机走动",
   "muhc.configuration.randomWalk.tooltip": "允许女仆工作时随机走动\n注意，当女仆自由移动时将不会触发工作相关气泡",
 
+  "muhc.configuration.timing": "时机",
   "muhc.configuration.bubbleInterval": "聊天气泡间隔(tick)",
   "muhc.configuration.bubbleInterval.tooltip": "在摇曲柄时平均间隔多久说一句话（T±0.5T）",
   "muhc.configuration.operationInterval": "交互间隔(tick)",
@@ -26,6 +30,7 @@
   "muhc.configuration.operationDuration": "持续时间(tick)",
   "muhc.configuration.operationDuration.tooltip": "决定了每次交互曲柄持续运动多久",
 
+  "muhc.configuration.stress": "应力",
   "muhc.configuration.baseStress": "基础应力",
   "muhc.configuration.baseStress.tooltip": "女仆摇手柄能产生的基础应力",
   "muhc.configuration.stressPerFavorability": "应力增量",

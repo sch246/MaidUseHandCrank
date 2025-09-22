@@ -21,7 +21,7 @@ public class Config {
         BUILDER.pop();
 
         // 搜索范围设置
-        BUILDER.push("search");
+        BUILDER.push("range");
         CENTER_SEARCH_RADIUS = BUILDER
                 .translation(translateKey("centerSearchRadius"))
                 .defineInRange("centerSearchRadius", 0, 0, Integer.MAX_VALUE);
