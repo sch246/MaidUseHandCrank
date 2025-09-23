@@ -32,7 +32,7 @@ Employee capabilities will enhance synchronously with increased favorability!
 
 -   **Power Boost**: The maid's base Stress Unit (SU) and the **Stress Increment** gained with each favorability level increase are configurable. Higher favorability means stronger power!
 -   **Skilled Worker (Favorability > Half)**: Unlocks **[Endurance Operation]**, doubling the duration of each crank interaction. This allows her to free her hands and simultaneously operate **twice** the number of cranks!
--   **Ace Pilot (Max Favorability)**: Unlocks **[Ambidextrous Operation]**, again **doubling** the number of cranks she can operate simultaneously (four times the efficiency overall)!
+-   **Ace Mechanist (Max Favorability)**: Unlocks **[Ambidextrous Operation]**, again **doubling** the number of cranks she can operate simultaneously (four times the efficiency overall)!
 
 ### Step Three: Production Line Optimization (Advanced Techniques)
 -   **Multitasking**: When the maid has surplus power output, she will automatically seek out nearby **additional** cranks to operate, never wasting a single bit of energy!
