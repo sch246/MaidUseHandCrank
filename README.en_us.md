@@ -20,11 +20,11 @@ Train your maid from a rookie operating a single crank into an Ace Mechanist cap
 ### Step One: Onboarding Training (Basic Operation)
 1.  **Assign Task**: In the maid's GUI, switch to the newly added "Hand Crank" task.
 
-![Hand Crank Image](https://s2.loli.net/2025/09/13/icLEZt92NgwVqpA.png)
+![Hand Crank Image](https://s2.loli.net/2025/09/13/jtRoi6OU2cumlfG.png)
 
 2.  **Start Working**: She will automatically find and move to the best position near a hand crank to begin working. Congratulations, your first employee is on duty!
 
-![Maid Operating Hand Crank Image](https://s2.loli.net/2025/09/13/yrZ3Yo1qBUazGIL.png)
+![⑨ Using Hand Crank Image](https://s2.loli.net/2025/09/13/IJG8MVOjoeByRca.png)
 
 ### Step Two: Path to Promotion (Increasing Favorability)
 
