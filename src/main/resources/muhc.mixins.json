@@ -3,7 +3,9 @@
     "package": "com.sch246.muhc.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "HandCrankBlockEntityMixin"
+        "HandCrankBlockEntityMixin",
+        "ItemFrameMixin",
+        "ItemFrameItemMixin"
     ],
     "injectors": {
       "defaultRequire": 1

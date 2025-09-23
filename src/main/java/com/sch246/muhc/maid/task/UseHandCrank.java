@@ -24,10 +24,14 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiRecord;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
@@ -40,7 +44,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     private int bubbleTimer = 0;
     private final RandomSource random = RandomSource.create();
     private BlockPos crankPos;
-    private boolean back = false;
+    private boolean offHand = false;
 
     public UseHandCrank(float speed) {
         super(ImmutableMap.of(
@@ -148,6 +152,11 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         // return false;
         // }
 
+        // 下班！
+        if (maid.getScheduleDetail() != Activity.WORK) {
+            return false;
+        }
+
         if (crankPos == null) {
             MaidUseHandCrank.LOGGER.debug("位置已丢失，停止操作");
             return false;
@@ -180,24 +189,76 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         }
 
         // 开始操作状态
-        --operationTimer;
+        int maxOperationTime = Config.OPERATION_INTERVAL.get();
         maid.getLookControl().setLookAt(crankPos.getCenter());
-        if (operationTimer <= 0) {
+        if (operationTimer == 0) {
             // MaidUseHandCrank.LOGGER.debug("执行一次曲柄操作");
-            operationTimer = Config.OPERATION_INTERVAL.get();
-            operateCrankHandle(level, maid, crankPos);
+
+            // 尝试重新锁定最近的曲柄
+            updateLock(level, maid);
+
+            operateReachableFreeCrankHandle(level, maid);
+
+        } else if (Config.TWO_HANDED_OPERATION.get()
+                && operationTimer == maxOperationTime / 2
+                && maid.getFavorability() == 384) {
+            // 满级好感速度*2
+            offHand = !offHand;
+            operateReachableFreeCrankHandle(level, maid);
+            offHand = !offHand;
         }
 
-        if (!Config.RANDOM_WALK.get() || !maid.canBrainMoving()) {
-            // 如果不允许到处走或者不能移动
-            --bubbleTimer;
-            if (bubbleTimer <= 0) {
-                bubbleTimer = getRandomBubbleTimer();
-                String[] chatBubbles = DynamicLangKeys.getChatBubbles();
-                int i = random.nextInt(chatBubbles.length);
-                Component component = getComponent(maid, chatBubbles[i]);
-                maid.getChatBubbleManager().addChatBubble(TextChatBubbleData.type2(component));
+        operationTimer = (operationTimer + 1) % maxOperationTime;
+
+        handleChatBubbles(maid);
+    }
+
+    private void updateLock(@Nonnull ServerLevel level, @Nonnull EntityMaid maid) {
+        BlockPos pos = getNearestReachableCrankPosition(maid, level,
+                p -> level.getBlockEntity(p) instanceof HandCrankBlockEntity
+                        && canLock(level, p));
+        if (pos != null && crankPos != pos && tryLock(level, pos)) {
+            if (crankPos != null) {
+                // 确保只持有一个锁
+                unLock(level, crankPos);
             }
+            crankPos = pos.immutable();
+        }
+    }
+
+//    private boolean shouldOperate(int favorability, int maxOperationTime) {
+//        if (favorability >= 64 && favorability < 192) {
+//            return operationTimer == maxOperationTime / 2;
+//        } else if (favorability >= 192 && favorability < 384) {
+//            int third = maxOperationTime / 3;
+//            return (operationTimer == third || operationTimer == 2 * third);
+//        } else if (favorability == 384) {
+//            int quarter = maxOperationTime / 4;
+//            return (operationTimer == quarter || operationTimer == 2 * quarter || operationTimer == 3 * quarter);
+//        }
+//        return false;
+//    }
+
+    private void operateReachableFreeCrankHandle(@Nonnull ServerLevel level, @Nonnull EntityMaid maid) {
+        int halfTime = Config.OPERATION_DURATION.get() / 2;
+        BlockPos pos = getNearestReachableCrankPosition(maid, level,
+                p -> level.getBlockEntity(p) instanceof HandCrankBlockEntity handCrank
+                        && handCrank.inUse <= halfTime);
+        if (pos != null) {
+            operateCrankHandle(level, maid, pos);
+        }
+    }
+
+    private void handleChatBubbles(@Nonnull EntityMaid maid) {
+        if (Config.RANDOM_WALK.get() && maid.canBrainMoving()) {
+            return; // 允许到处走且能移动时不显示气泡
+        }
+
+        if (--bubbleTimer <= 0) {
+            bubbleTimer = getRandomBubbleTimer();
+            String[] chatBubbles = DynamicLangKeys.getChatBubbles();
+            Component component = getComponent(maid, chatBubbles[random.nextInt(chatBubbles.length)]);
+            maid.getChatBubbleManager().addChatBubble(TextChatBubbleData.type2(component));
         }
     }
 
@@ -260,7 +321,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                 .map(PoiRecord::getPos)
                 .filter(pos -> level.getBlockEntity(pos) instanceof HandCrankBlockEntity handCrank
                         && handCrank.inUse == 0
-                        && canLock(level, pos.immutable()))
+                        && canLock(level, pos))
                 .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
                 .orElse(null);
 
@@ -301,10 +362,25 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                 });
     }
 
+    @javax.annotation.Nullable
+    private BlockPos getNearestReachableCrankPosition(EntityMaid maid, ServerLevel level, Predicate<BlockPos> blockPredicate) {
+        // 使用注册的POI类型查找手摇曲柄
+        return level.getPoiManager()
+                .getInRange(
+                        type -> type.value().equals(InitPoi.HAND_CRANK.get()),
+                        maid.blockPosition(),
+                        Config.REACH_RADIUS.get(),
+                        PoiManager.Occupancy.ANY
+                )
+                .map(PoiRecord::getPos)
+                .filter(blockPredicate)
+                .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
+                .orElse(null);
+    }
 
-    private int lastFavorability = -1;
+    private float lastStress = -1;
 
-    private void operateCrankHandle(ServerLevel level, EntityMaid maid, BlockPos pos) {
+    private void operateCrankHandle(ServerLevel level, EntityMaid maid, @Nonnull BlockPos pos) {
         // MaidUseHandCrank.LOGGER.debug("女仆 {} 正在操作位于 {} 的手摇曲柄",
         // maid.getName().getString(), pos);
 
@@ -314,6 +390,12 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         }
 
         // ------------ 是否反转 ------------
+
+        // 若位置有物品展示框则反转
+        boolean back = false;
+        if (Config.ITEM_FRAME_INTERACTION.get()) {
+            back = !level.getEntitiesOfClass(ItemFrame.class, new AABB(pos)).isEmpty();
+        }
 
         if (handCrank.getSpeed() != 0.0F) {
             // 如果检测到旋转，那么会更新旋转方向
@@ -325,27 +407,32 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
         MaidUseHandCrank.LOGGER.debug("{} 当前方向 {}", maid.getName().getString(), back ? "逆向" : "正向");
 
-        // ------------ 好感度加应力 ------------
+        // ------------ 好感度加成 ------------
 
+        int favorability = maid.getFavorability();
+
+        // 好感度加应力
+        float speed = 32;
+        float baseStress = ((float) Config.BASE_STRESS.get()) / speed;
+        float extraStress = ((float) Config.STREES_PER_FAVORABILITY.get()) / speed;
+        float stress = (baseStress + favorability * extraStress);
+
+        // 好感度增加应力时间
         int tick = Config.OPERATION_DURATION.get();
+        if (Config.EXTENDED_OPERATION.get() && favorability >= 192) {
+            tick *= 2;
+        }
 
         if (handCrank instanceof IMaidHandCrank maidHandCrank) {
-//            float speed = handCrank.getTheoreticalSpeed();
-            float speed = 32;
-            float baseStress = (float) Config.BASE_STRESS.get() / speed;
-            float extraStress = (float) Config.STREES_PER_FAVORABILITY.get() / speed;
-            maidHandCrank.muhc$turn(
-                    (int) (baseStress + maid.getFavorability() * extraStress),
-                    tick
-            );
+            maidHandCrank.muhc$setStress(stress, tick);
         }
 
         // ------------ 原版turn ------------
 
         boolean update = handCrank.getGeneratedSpeed() == 0.0F
                 || back != handCrank.backwards
-                || lastFavorability != maid.getFavorability();
-        lastFavorability = maid.getFavorability();
+                || lastStress != stress;
+        lastStress = stress;
 
         handCrank.inUse = tick;
         handCrank.backwards = back;
@@ -355,7 +442,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
         // ------------ 女仆动画 ------------
 
-        maid.swing(InteractionHand.MAIN_HAND);
+        maid.swing(offHand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
     }
 
 }

@@ -20,8 +20,8 @@ public class Config {
                 .defineInRange("priority", 5, 0, Integer.MAX_VALUE);
         BUILDER.pop();
 
-        // 搜索范围设置
-        BUILDER.push("range");
+        // 行为设置
+        BUILDER.push("behavior");
         CENTER_SEARCH_RADIUS = BUILDER
                 .translation(translateKey("centerSearchRadius"))
                 .defineInRange("centerSearchRadius", 0, 0, Integer.MAX_VALUE);
@@ -31,39 +31,40 @@ public class Config {
         REACH_RADIUS = BUILDER
                 .translation(translateKey("reachRadius"))
                 .defineInRange("reachRadius", 4, 0, Integer.MAX_VALUE);
-        BUILDER.pop();
-
-        // 行为设置
-        BUILDER.push("behavior");
         CLAIMS_BEFOREHAND = BUILDER
                 .translation(translateKey("claimsBeforehand"))
                 .define("claimsBeforehand", true);
         RANDOM_WALK = BUILDER
                 .translation(translateKey("randomWalk"))
                 .define("randomWalk", true);
+        ITEM_FRAME_INTERACTION = BUILDER
+                .translation(translateKey("itemFrameInteraction"))
+                .define("itemFrameInteraction", true);
         BUILDER.pop();
 
-        // 操作时间设置
-        BUILDER.push("timing");
+        // 工作时间、压力和好感度设置
+        BUILDER.push("work");
         BUBBLE_INTERVAL = BUILDER
                 .translation(translateKey("bubbleInterval"))
                 .defineInRange("bubbleInterval", 600, 1, Integer.MAX_VALUE);
         OPERATION_INTERVAL = BUILDER
                 .translation(translateKey("operationInterval"))
-                .defineInRange("operationInterval", 9, 1, Integer.MAX_VALUE);
+                .defineInRange("operationInterval", 8, 1, Integer.MAX_VALUE);
         OPERATION_DURATION = BUILDER
                 .translation(translateKey("operationDuration"))
-                .defineInRange("operationDuration", 11, 1, Integer.MAX_VALUE);
-        BUILDER.pop();
-
-        // 压力和好感度设置
-        BUILDER.push("stress");
+                .defineInRange("operationDuration", 10, 1, Integer.MAX_VALUE);
         BASE_STRESS = BUILDER
                 .translation(translateKey("baseStress"))
-                .defineInRange("baseStress", 256, 1, Integer.MAX_VALUE);
+                .defineInRange("baseStress", 256, 0, Integer.MAX_VALUE);
         STREES_PER_FAVORABILITY = BUILDER
                 .translation(translateKey("stressPerFavorability"))
                 .defineInRange("stressPerFavorability", 10, 0, Integer.MAX_VALUE);
+        EXTENDED_OPERATION = BUILDER
+                .translation(translateKey("extendedOperation"))
+                .define("extendedOperation", true);
+        TWO_HANDED_OPERATION = BUILDER
+                .translation(translateKey("twoHandedOperation"))
+                .define("twoHandedOperation", true);
         BUILDER.pop();
     }
 
@@ -72,13 +73,16 @@ public class Config {
     public static final ModConfigSpec.IntValue CENTER_SEARCH_RADIUS;
     public static final ModConfigSpec.IntValue MAID_SEARCH_RADIUS;
     public static final ModConfigSpec.IntValue REACH_RADIUS;
-    public static final ModConfigSpec.IntValue BUBBLE_INTERVAL;
     public static final ModConfigSpec.BooleanValue CLAIMS_BEFOREHAND;
     public static final ModConfigSpec.BooleanValue RANDOM_WALK;
+    public static final ModConfigSpec.BooleanValue ITEM_FRAME_INTERACTION;
+    public static final ModConfigSpec.IntValue BUBBLE_INTERVAL;
     public static final ModConfigSpec.IntValue OPERATION_INTERVAL;
     public static final ModConfigSpec.IntValue OPERATION_DURATION;
     public static final ModConfigSpec.IntValue BASE_STRESS;
     public static final ModConfigSpec.IntValue STREES_PER_FAVORABILITY;
+    public static final ModConfigSpec.BooleanValue EXTENDED_OPERATION;
+    public static final ModConfigSpec.BooleanValue TWO_HANDED_OPERATION;
 
 //    public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
 //            .comment("What you want the introduction message to be for the magic number")

@@ -57,10 +57,10 @@ public class HandCrankTask implements IMaidTask {
         return Config.RANDOM_WALK.get();
     }
 
-//    @Override
-//    public boolean workPointTask(@Nonnull EntityMaid maid) {
-//        return true;
-//    }
+    @Override
+    public boolean workPointTask(@Nonnull EntityMaid maid) {
+        return true;
+    }
 
 //    @Override
 //    public float searchRadius(@Nonnull EntityMaid maid) {
