@@ -59,9 +59,9 @@ public class Config {
         STREES_PER_FAVORABILITY = BUILDER
                 .translation(translateKey("stressPerFavorability"))
                 .defineInRange("stressPerFavorability", 10, 0, Integer.MAX_VALUE);
-        EXTENDED_OPERATION = BUILDER
-                .translation(translateKey("extendedOperation"))
-                .define("extendedOperation", true);
+        ENDURANCE_OPERATION = BUILDER
+                .translation(translateKey("enduranceOperation"))
+                .define("enduranceOperation", true);
         TWO_HANDED_OPERATION = BUILDER
                 .translation(translateKey("twoHandedOperation"))
                 .define("twoHandedOperation", true);
@@ -81,7 +81,7 @@ public class Config {
     public static final ModConfigSpec.IntValue OPERATION_DURATION;
     public static final ModConfigSpec.IntValue BASE_STRESS;
     public static final ModConfigSpec.IntValue STREES_PER_FAVORABILITY;
-    public static final ModConfigSpec.BooleanValue EXTENDED_OPERATION;
+    public static final ModConfigSpec.BooleanValue ENDURANCE_OPERATION;
     public static final ModConfigSpec.BooleanValue TWO_HANDED_OPERATION;
 
 //    public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER

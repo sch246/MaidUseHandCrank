@@ -419,7 +419,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
         // 好感度增加应力时间
         int tick = Config.OPERATION_DURATION.get();
-        if (Config.EXTENDED_OPERATION.get() && favorability >= 192) {
+        if (Config.ENDURANCE_OPERATION.get() && favorability >= 192) {
             tick *= 2;
         }
 
