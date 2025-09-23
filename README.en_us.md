@@ -35,7 +35,7 @@ Employee capabilities will enhance synchronously with increased favorability!
 -   **Ace Mechanist (Max Favorability)**: Unlocks **[Ambidextrous Operation]**, again **doubling** the number of cranks she can operate simultaneously (four times the efficiency overall)!
 
 ### Step Three: Production Line Optimization (Advanced Techniques)
--   **Multitasking**: When the maid has surplus power output, she will automatically seek out nearby **additional** cranks to operate, never wasting a single bit of energy!
+-   **Multitasking**: When the maid has a surplus of interaction speed, she will automatically seek out nearby **additional** cranks to operate, never wasting a single bit of energy!
 -   **Fixed Workstation**: Want her to focus on work? **Have her start working, then make her sit down**. This will stop her from wandering and cause her to start spouting insightful "worker quotes".
   -   **Please note**: With the standardization of factory management, maids will now voluntarily go off duty during non-working hours, even if they are fixed at a workstation.
   -   **Known Issue**: Maids that are sitting down are not resistant to unloading. They will not automatically resume work upon reloading. A fixed workstation can be achieved by setting their home and disabling random walking.
