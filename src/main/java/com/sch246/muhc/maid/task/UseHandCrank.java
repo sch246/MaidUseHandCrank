@@ -89,7 +89,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                 // 确保只持有一个锁
                 unLock(level, crankPos);
             }
-            crankPos = pos.immutable();
+            crankPos = pos;
             if (Config.CLAIMS_BEFOREHAND.get()) {
                 MaidUseHandCrank.LOGGER.debug("尝试独占方块");
                 if (!tryLock(level, crankPos)) {
@@ -105,7 +105,8 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
         if (outOfRange(maid, crankPos)) {
             MaidUseHandCrank.LOGGER.debug("发现手摇曲柄，但距离太远，开始移动...");
-            BehaviorUtils.setWalkAndLookTargetMemories(maid, getFrontPos(level, crankPos), speed, 1);
+//            BehaviorUtils.setWalkAndLookTargetMemories(maid, getFrontPos(level, crankPos), speed, 1);
+            BehaviorUtils.setWalkAndLookTargetMemories(maid, crankPos, speed, Config.REACH_RADIUS.get());
             this.setNextCheckTickCount(5);
             return false;
         }
@@ -222,7 +223,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                 // 确保只持有一个锁
                 unLock(level, crankPos);
             }
-            crankPos = pos.immutable();
+            crankPos = pos;
         }
     }
 
