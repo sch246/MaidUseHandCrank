@@ -67,7 +67,7 @@ config="${mod_id}.mixins.json"
     modId="neoforge" #mandatory
     type="required" #mandatory
     versionRange = "${neo_version_range}"
-    ordering="NONE"
+    ordering="AFTER"
     side="BOTH"
 
 # Minecraft dependency
@@ -75,7 +75,7 @@ config="${mod_id}.mixins.json"
     modId="minecraft"
     type="required"
     versionRange="${minecraft_version_range}"
-    ordering="NONE"
+    ordering="AFTER"
     side="BOTH"
 
 # Touhou Little Maid dependency
@@ -83,7 +83,7 @@ config="${mod_id}.mixins.json"
     modId="touhou_little_maid"
     type="required"
     versionRange="[1.3.3,)"
-    ordering="NONE"
+    ordering="AFTER"
     side="BOTH"
 
 # Create dependency
@@ -91,7 +91,15 @@ config="${mod_id}.mixins.json"
     modId="create"
     type="required"
     versionRange="[6.0.0,)"
-    ordering="NONE"
+    ordering="AFTER"
+    side="BOTH"
+
+# Create dependency
+[[dependencies.${mod_id}]]
+    modId="create_connected"
+    type="optional"
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
     side="BOTH"
 
 #================================== DEPENDENCIES END ==================================

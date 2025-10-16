@@ -132,6 +132,7 @@ repositories {
 dependencies {
     // 添加 Create 依赖
     implementation "curse.maven:create-328085:6641610"
+    implementation "curse.maven:create-connected-947914:6685698"
     compileOnly "com.tterrag.registrate:Registrate:$registrate_version"
     compileOnly "net.createmod.ponder:Ponder-NeoForge-$minecraft_version:$ponder_version"
 

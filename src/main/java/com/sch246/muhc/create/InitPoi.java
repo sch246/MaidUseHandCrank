@@ -17,7 +17,7 @@ public class InitPoi {
 
     static {
         POI_TYPES = DeferredRegister.create(Registries.POINT_OF_INTEREST_TYPE, MaidUseHandCrank.MODID);
-        HAND_CRANK = POI_TYPES.register("hand_crank", PoiManager::getHandCrank);
+        HAND_CRANK = POI_TYPES.register("hand_crank", PoiManager::getCrankPoiType);
     }
 
     public static void register(IEventBus eventBus) {
