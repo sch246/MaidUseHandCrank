@@ -104,25 +104,38 @@ public interface IUniPosOwner {
 }
 
 /**
- * 管理 IUniPosOwner 系统的单例存储。
- * 该类是后台实现，大多数类都不应直接使用。
- * 确保每个维度的 BlockPos 都有唯一的所有者。
- * 它为 BlockPos 使用弱键，以防止在不再引用某个位置时出现内存泄漏。
- * Manages the singleton storage for the IUniPosOwner system.
- * This class is the backend implementation and should not be used directly by most classes.
- * It ensures that for each dimension, a given BlockPos has a unique owner.
- * It uses weak keys for BlockPos to prevent memory leaks when a pos is no longer referenced.
+ 管理 IUniPosOwner 系统的单例存储。
+ 该类是后台实现，大多数类不应直接使用。
+ 在同一维度键（ResourceKey<Level）范围内，确保任意时刻一个 BlockPos 只能被一个对象“拥有”。
+ 注意：锁的作用域是维度键级别，因此在服务端同一维度的不同 Level 实例之间共享。
+ 缓存以 BlockPos 的 long 值为键，以 IUniPosOwner 的弱值（weak values）为值；
+ 当所有者不再被强引用时，条目会自动移除，从而释放锁。
+ 该实现面向服务端使用。
+ Manages the singleton storage for the IUniPosOwner system.
+ This class is the backend implementation and should not be used directly by most classes.
+ Within the same dimension key (ResourceKey<Level>), it guarantees that a BlockPos is owned
+ by at most one object at any time.
+ Note: the lock scope is dimension-key level, so locks are shared across different
+ Level instances of the same dimension on the server.
+ The cache uses the long value of BlockPos as the key and weak values for IUniPosOwner;
+ when an owner is no longer strongly referenced, the entry is automatically removed
+ to release the lock.
+ This implementation is intended for server-side use.
  */
 final class UniPosManager {
 
     public static final UniPosManager INSTANCE = new UniPosManager();
 
-    // 顶层地图：Dimension -> Cache of Positions.
-    // Cache 的键是 BlockPos 的 long 值，值是 IUniPosOwner 的弱引用。
-    // 这允许当 IUniPosOwner 被 GC 时，锁自动从缓存中移除。
-    // Top-level map: Dimension -> Cache of Positions.
-    // The key to the Cache is the long value of BlockPos, and the value is a weak reference to IUniPosOwner.
-    // This allows locks to be automatically removed from the cache when the IUniPosOwner is GC'd.
+    // 顶层映射：维度键（ResourceKey<Level>） -> 每维度的坐标缓存。
+    // 缓存键为 BlockPos 的 long 值，值为 IUniPosOwner 的弱值（weak values）。
+    // 使用维度键确保：同一维度的不同 Level 实例在服务端共享同一套锁；
+    // 使用弱值确保：当所有者被 GC 时，锁能自动释放。
+    //
+    // Top-level map: dimension key (ResourceKey<Level>) -> per-dimension position cache.
+    // The cache uses the BlockPos long as the key and weak values (IUniPosOwner) as the value.
+    // Using the dimension key ensures locks are shared across different Level instances
+    // of the same dimension on the server; using weak values ensures locks are automatically
+    // released when the owner is GC'd.
     private final ConcurrentMap<ResourceKey<Level>, Cache<Long, IUniPosOwner>> dimensionLocks;
 
     private UniPosManager() {
@@ -130,12 +143,15 @@ final class UniPosManager {
     }
 
     /**
-     * 获取或创建特定维度的 Cache。
-     * Cache 使用 BlockPos 的 `long` 值作为键，`IUniPosOwner` 的弱引用作为值。
-     * 这确保了当 IUniPosOwner 不再被强引用时，它会自动从 Cache 中移除，释放锁。
-     * Gets or creates a dimension-specific Cache.
-     * The Cache uses the `long` value of BlockPos as the key and a weak reference to `IUniPosOwner` as the value.
-     * This ensures that when IUniPosOwner is no longer strongly referenced, it is automatically removed from the Cache, releasing the lock.
+     获取或创建特定维度键对应的 Cache。
+     Cache 使用 BlockPos 的 long 值作为键，IUniPosOwner 的弱值作为值。
+     按 ResourceKey<Level> 分隔缓存，因此同一维度的不同 Level 实例在服务端共享同一套锁。
+     computeIfAbsent 是原子操作，保证线程安全地获取或创建 Cache。
+     Gets or creates the Cache for a specific dimension key.
+     The Cache uses the long value of BlockPos as the key and weak values for IUniPosOwner.
+     Partitioned by ResourceKey<Level>, so different Level instances of the same dimension
+     share the same set of locks on the server.
+     computeIfAbsent is atomic, ensuring thread-safe retrieval or creation of the Cache.
      */
     private Cache<Long, IUniPosOwner> getDimensionCache(Level level) {
         // computeIfAbsent 是原子操作，保证线程安全地获取或创建 Cache

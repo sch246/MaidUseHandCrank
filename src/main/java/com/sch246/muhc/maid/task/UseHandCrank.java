@@ -27,7 +27,9 @@ import net.minecraft.world.entity.ai.village.poi.PoiRecord;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;
 import java.util.Optional;
@@ -55,8 +57,9 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         this.bubbleTimer = getRandomBubbleTimer();
     }
 
-    protected boolean outOfRange(EntityMaid maid, BlockPos pos) {
-        return pos.distSqr(maid.blockPosition()) > Math.pow(Config.REACH_RADIUS.get(), 2);
+    protected boolean outOfReachRange(EntityMaid maid, BlockPos pos) {
+        int reachRadius = Config.REACH_RADIUS.get();
+        return pos.distToCenterSqr(maid.position()) > reachRadius * reachRadius;
     }
 
     @Override
@@ -78,13 +81,14 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
             if (crankPos != null) {
                 // 存储的pos不可达，释放
                 unLock(level, crankPos);
+                crankPos = null;
             }
             return false;
         }
         MaidUseHandCrank.LOGGER.debug("寻找到的手摇曲柄位置: {}", pos);
 
         // 若方块不是自己独占的
-        if (crankPos != pos) {
+        if (crankPos != pos && !pos.equals(crankPos)) {
             if (crankPos != null) {
                 // 确保只持有一个锁
                 unLock(level, crankPos);
@@ -103,10 +107,10 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
             MaidUseHandCrank.LOGGER.debug("方块本是独占的");
         }
 
-        if (outOfRange(maid, crankPos)) {
+        if (outOfReachRange(maid, crankPos)) {
             MaidUseHandCrank.LOGGER.debug("发现手摇曲柄，但距离太远，开始移动...");
-//            BehaviorUtils.setWalkAndLookTargetMemories(maid, getFrontPos(level, crankPos), speed, 1);
-            BehaviorUtils.setWalkAndLookTargetMemories(maid, crankPos, speed, Config.REACH_RADIUS.get());
+            BehaviorUtils.setWalkAndLookTargetMemories(maid, getFrontPos(level, crankPos), speed, 0);
+//            BehaviorUtils.setWalkAndLookTargetMemories(maid, crankPos, speed, Config.REACH_RADIUS.get());
             this.setNextCheckTickCount(5);
             return false;
         }
@@ -135,11 +139,11 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
      * @return frontPos 手摇曲柄前方的坐标，若当前不是手摇曲柄，返回原坐标
      */
     private BlockPos getFrontPos(@Nonnull ServerLevel level, BlockPos pos) {
-        try {
-            return pos.relative(level.getBlockState(pos).getValue(HandCrankBlock.FACING));
-        } catch (IllegalArgumentException e) {
-            return pos;
+        BlockState blockState = level.getBlockState(pos);
+        if (blockState.getBlock() instanceof HandCrankBlock) {
+            return pos.relative(blockState.getValue(HandCrankBlock.FACING));
         }
+        return pos;
     }
 
     @Override
@@ -168,7 +172,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
             return false;
         }
 
-        if (outOfRange(maid, crankPos)) {
+        if (outOfReachRange(maid, crankPos)) {
             MaidUseHandCrank.LOGGER.debug("距离太远，停止操作");
             return false;
         }
@@ -196,7 +200,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
             // MaidUseHandCrank.LOGGER.debug("执行一次曲柄操作");
 
             // 尝试重新锁定最近的曲柄
-            updateLock(level, maid);
+            refreshLockToNearestAvailable(level, maid);
 
             operateReachableFreeCrankHandle(level, maid);
 
@@ -214,11 +218,11 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         handleChatBubbles(maid);
     }
 
-    private void updateLock(@Nonnull ServerLevel level, @Nonnull EntityMaid maid) {
+    private void refreshLockToNearestAvailable(@Nonnull ServerLevel level, @Nonnull EntityMaid maid) {
         BlockPos pos = getNearestReachableCrankPosition(maid, level,
                 p -> level.getBlockEntity(p) instanceof HandCrankBlockEntity
                         && canLock(level, p));
-        if (pos != null && crankPos != pos && tryLock(level, pos)) {
+        if (pos != null && crankPos != pos && !pos.equals(crankPos) && tryLock(level, pos)) {
             if (crankPos != null) {
                 // 确保只持有一个锁
                 unLock(level, crankPos);
@@ -303,19 +307,22 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
         int centerRadius = Config.CENTER_SEARCH_RADIUS.get();
         if (centerRadius == 0) {
-            centerRadius = (int) maid.getRestrictRadius();
+            // 车万女仆的实际跟随距离就是比设置距离小，这可能是原 mod 的 bug
+            centerRadius = maid.isHomeModeEnable()
+                    ? (int) maid.getRestrictRadius() - 1
+                    : (int) maid.getRestrictRadius() - 2;
         }
-        BlockPos centerPos = maid.hasRestriction()
-                ? maid.getRestrictCenter()
+        Vec3 centerPos = maid.hasRestriction()
+                ? maid.getRestrictCenter().getCenter()
                 : Optional.ofNullable(maid.getOwner())
-                        .map(e -> new BlockPos(e.getBlockX(), e.getBlockY(), e.getBlockZ()))
-                        .orElse(maid.blockPosition());
+                .map(e -> new Vec3(e.getX(), e.getY(), e.getZ()))
+                .orElse(maid.position());
 
         int maidRadius = Config.MAID_SEARCH_RADIUS.get();
         if (maidRadius == 0) {
             maidRadius = Config.REACH_RADIUS.get();
         }
-        BlockPos maidPos = maid.blockPosition();
+        Vec3 maidPos = maid.position();
 
         MaidUseHandCrank.LOGGER.debug("default: 开始在 {} 周围 {} 格，以及 {} 周围 {} 格内搜索手摇曲柄POI...", centerPos, centerRadius, maidPos, maidRadius);
         BlockPos result = getCrankInDoubleCircleUnion(level, centerPos, centerRadius, maidPos, maidRadius)
@@ -331,13 +338,13 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     }
 
     public Stream<PoiRecord> getCrankInDoubleCircleUnion(ServerLevel level,
-            BlockPos center1, int radius1,
-            BlockPos center2, int radius2) {
+            Vec3 centerPos, int centerRadius,
+            Vec3 maidPos, int maidRadius) {
         // 计算包含两个圆的最小方形区域
-        int minX = Math.min(center1.getX() - radius1, center2.getX() - radius2);
-        int maxX = Math.max(center1.getX() + radius1, center2.getX() + radius2);
-        int minZ = Math.min(center1.getZ() - radius1, center2.getZ() - radius2);
-        int maxZ = Math.max(center1.getZ() + radius1, center2.getZ() + radius2);
+        int minX = Math.min((int) centerPos.x() - centerRadius, (int) maidPos.x() - maidRadius);
+        int maxX = Math.max((int) centerPos.x() + centerRadius, (int) maidPos.x() + maidRadius);
+        int minZ = Math.min((int) centerPos.z() - centerRadius, (int) maidPos.z() - maidRadius);
+        int maxZ = Math.max((int) centerPos.z() + centerRadius, (int) maidPos.z() + maidRadius);
 
         // 计算需要检查的区块范围
         int minChunkX = Math.floorDiv(minX, 16);
@@ -346,8 +353,8 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         int maxChunkZ = Math.floorDiv(maxZ, 16);
 
         // 预计算距离平方以避免重复计算
-        int radiusSquared1 = radius1 * radius1;
-        int radiusSquared2 = radius2 * radius2;
+        int centerRadiusSqr = centerRadius * centerRadius;
+        int maidRadiusSqr = maidRadius * maidRadius;
 
         PoiManager poiManager = level.getPoiManager();
 
@@ -357,9 +364,9 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                         chunkPos, PoiManager.Occupancy.ANY))
                 .filter(poiRecord -> {
                     BlockPos pos = poiRecord.getPos();
-                    // 检查是否在任一圆内
-                    return pos.distSqr(center1) <= radiusSquared1 ||
-                            pos.distSqr(center2) <= radiusSquared2;
+                    // 需要能走到正前方，要么能直接碰到
+                    return getFrontPos(level, pos).distToCenterSqr(centerPos) <= centerRadiusSqr ||
+                            pos.distToCenterSqr(maidPos) <= maidRadiusSqr;
                 });
     }
 
