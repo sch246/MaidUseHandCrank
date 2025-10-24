@@ -31,12 +31,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nonnull;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import javax.annotation.Nonnull;
 
 public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     private static final int MAX_DELAY_TIME = 60;
@@ -422,7 +421,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         // 好感度加应力
         float speed = 32;
         float baseStress = ((float) Config.BASE_STRESS.get()) / speed;
-        float extraStress = ((float) Config.STREES_PER_FAVORABILITY.get()) / speed;
+        float extraStress = ((float) Config.STRESS_PER_FAVORABILITY.get()) / speed;
         float stress = (baseStress + favorability * extraStress);
 
         // 好感度增加应力时间

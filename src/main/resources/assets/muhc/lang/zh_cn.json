@@ -106,5 +106,8 @@
   "message.muhc.master.12": "%s的成功就是我的成功",
   "message.muhc.master.13": "是%s让我的摇动变得有意义",
 
-  "message.muhc.master2.1": "不要想着%s为你提供了什么，要想想你能为%s提供什么"
+  "message.muhc.master2.1": "不要想着%s为你提供了什么，要想想你能为%s提供什么",
+
+  "gui.muhc.cloth_config_warning.tips": "你需要安装Cloth Config API模组才能使用游戏内配置功能",
+  "gui.muhc.cloth_config_warning.download": "下载Cloth Config API模组"
 }

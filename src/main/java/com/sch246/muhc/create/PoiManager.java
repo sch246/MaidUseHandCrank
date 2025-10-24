@@ -1,15 +1,16 @@
+// PoiManager.java (Forge)
+
 package com.sch246.muhc.create;
 
-import java.util.Set;
-import java.util.stream.Stream;
-
 import com.google.common.collect.ImmutableSet;
+import com.hlysine.create_connected.CCBlocks;
 import com.simibubi.create.AllBlocks;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fml.ModList;
 
-import com.hlysine.create_connected.CCBlocks;
-
+import java.util.Set;
+import java.util.stream.Stream;
 
 public final class PoiManager {
     private static final Set<BlockState> ALL_CRANK_STATES;
@@ -31,7 +32,7 @@ public final class PoiManager {
         Stream<BlockState> crankWheelStates = Stream.empty();
         Stream<BlockState> largeCrankWheelStates = Stream.empty();
 
-        // 直接引用，如果mod未安装，下面代码不会被调用（但编译仍需依赖，需加optional runtime依赖）
+        // 直接引用，如果mod未安装，下面代码不会被调用（但编译仍需依赖，需加 optional 依赖）
         if (isCreateConnectedLoaded()) {
             crankWheelStates = CCBlocks.CRANK_WHEEL.get()
                     .getStateDefinition()
@@ -43,19 +44,13 @@ public final class PoiManager {
                     .stream();
         }
 
-        // 合并所有，收集成Set
+        // 合并所有，收集成 Set
         ALL_CRANK_STATES = Stream.of(handCrankStates, crankWheelStates, largeCrankWheelStates)
                 .flatMap(s -> s)
                 .collect(ImmutableSet.toImmutableSet());
-
-//        HAND_CRANK_STATES = AllBlocks.HAND_CRANK.get()
-//                .getStateDefinition()
-//                .getPossibleStates()
-//                .stream()
-//                .collect(com.google.common.collect.ImmutableSet.toImmutableSet());
     }
 
     private static boolean isCreateConnectedLoaded() {
-        return net.neoforged.fml.ModList.get().isLoaded("create_connected");
+        return ModList.get().isLoaded("create_connected");
     }
 }

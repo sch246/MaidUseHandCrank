@@ -106,6 +106,9 @@
   "message.muhc.master.12": "%s's success is my success",
   "message.muhc.master.13": "It is %s who gives my cranking meaning",
 
-  "message.muhc.master2.1": "Ask not what %s provides you, ask what you provide %s"
+  "message.muhc.master2.1": "Ask not what %s provides you, ask what you provide %s",
+
+  "gui.muhc.cloth_config_warning.tips": "You'll need to install the Cloth Config API mod to use the ingame configuration feature",
+  "gui.muhc.cloth_config_warning.download": "Download Cloth Config API"
 
 }

@@ -1,6 +1,5 @@
 package com.sch246.muhc.mixin;
 
-import com.sch246.muhc.Config;
 import com.simibubi.create.content.kinetics.crank.HandCrankBlockEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ItemFrame;

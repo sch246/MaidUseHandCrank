@@ -1,16 +1,20 @@
 {
-    "required": true,
-    "package": "com.sch246.muhc.mixin",
-    "compatibilityLevel": "JAVA_21",
-    "mixins": [
-        "HandCrankBlockEntityMixin",
-        "ItemFrameMixin",
-        "ItemFrameItemMixin"
-    ],
-    "injectors": {
-      "defaultRequire": 1
-    },
-    "overwrites": {
-      "requireAnnotations": true
-    }
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.sch246.muhc.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "muhc.refmap.json",
+  "mixins": [
+    "HandCrankBlockEntityMixin",
+    "ItemFrameMixin",
+    "ItemFrameItemMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
   }
+}
