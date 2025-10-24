@@ -7,6 +7,8 @@
     <a href="README.en_us.md">English</a>
 </p>
 
+[1.20.1](https://github.com/sch246/MaidUseHandCrank1.20.1)
+
 ## 简介 (Summary)
 
 这是 车万女仆 和 机械动力 的附属模组。让女仆能使用机械动力的手摇曲柄，并随着好感度提升增加工作能力。

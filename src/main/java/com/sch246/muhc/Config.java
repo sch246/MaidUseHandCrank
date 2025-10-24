@@ -56,7 +56,7 @@ public class Config {
         BASE_STRESS = BUILDER
                 .translation(translateKey("baseStress"))
                 .defineInRange("baseStress", 256, 0, Integer.MAX_VALUE);
-        STREES_PER_FAVORABILITY = BUILDER
+        STRESS_PER_FAVORABILITY = BUILDER
                 .translation(translateKey("stressPerFavorability"))
                 .defineInRange("stressPerFavorability", 10, 0, Integer.MAX_VALUE);
         ENDURANCE_OPERATION = BUILDER
@@ -80,7 +80,7 @@ public class Config {
     public static final ModConfigSpec.IntValue OPERATION_INTERVAL;
     public static final ModConfigSpec.IntValue OPERATION_DURATION;
     public static final ModConfigSpec.IntValue BASE_STRESS;
-    public static final ModConfigSpec.IntValue STREES_PER_FAVORABILITY;
+    public static final ModConfigSpec.IntValue STRESS_PER_FAVORABILITY;
     public static final ModConfigSpec.BooleanValue ENDURANCE_OPERATION;
     public static final ModConfigSpec.BooleanValue TWO_HANDED_OPERATION;
 

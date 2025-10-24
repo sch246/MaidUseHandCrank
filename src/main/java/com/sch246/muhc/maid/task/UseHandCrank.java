@@ -422,7 +422,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         // 好感度加应力
         float speed = 32;
         float baseStress = ((float) Config.BASE_STRESS.get()) / speed;
-        float extraStress = ((float) Config.STREES_PER_FAVORABILITY.get()) / speed;
+        float extraStress = ((float) Config.STRESS_PER_FAVORABILITY.get()) / speed;
         float stress = (baseStress + favorability * extraStress);
 
         // 好感度增加应力时间
