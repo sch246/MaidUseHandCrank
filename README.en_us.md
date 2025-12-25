@@ -46,7 +46,9 @@ Employee capabilities will enhance synchronously with increased favorability!
 <details>
 <summary>🔧 Click to Expand: Factory Owner's Configuration Manual (Detailed Settings)</summary>
 
-Now, all configuration items are clearly divided into three categories in-game, allowing for precise management.
+all configuration items are clearly divided into three categories in-game, allowing for precise management.
+
+> Now you can edit from Touhou Little Maid's configuration interface!
 
 ### General
 
