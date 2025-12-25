@@ -75,7 +75,7 @@ all configuration items are clearly divided into three categories in-game, allow
 | Operation Interval(tick)   |   `8`   | Determine the frequency of cranking. Needs to be 1~2 ticks less than the duration to maintain continuous rotation. |
 | Operation Duration(ticks)  |  `10`   | The amount of time the crank can continue to rotate with each interaction.                                         |
 | Base Stress(su)            |  `256`  | Base stress generated when shaking the handle with a maid at zero favorability.                                    |
-| Stress Increment(su)       |  `10`   | Additional stress gained per favorability level increase for the maid.                                             |
+| Stress Increment(su)       |  `10`   | Additional stress gained per favorability point increase for the maid.                                             |
 | Extended Operation         | `true`  | When maid's favorability reaches half level, doubled the duration of crank operation per interaction.              |
 | Two-Handed Operation       | `true`  | When maid's favorability reaches maximum level, the maid can operate with both hands.                              |
 
