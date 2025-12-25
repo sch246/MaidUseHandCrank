@@ -46,7 +46,9 @@
 <details>
 <summary>🔧 点击展开：工厂主配置手册 (详细设置)</summary>
 
-现在，所有配置项都在游戏中清晰地分为三类，方便你精细管理。
+所有配置项都在游戏中清晰地分为三类，方便你精细管理。
+
+> 现在从 Touhou Little Maid 的配置界面中进行编辑！
 
 ### 通用
 
@@ -80,6 +82,12 @@
 </details>
 
 ---
+
+## 贡献者
+
+<a href="https://github.com/sch246/MaidUseHandCrank/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=sch246/MaidUseHandCrank" />
+</a>  
 
 ## 致谢 (Thanks)
 

@@ -81,6 +81,12 @@ Now, all configuration items are clearly divided into three categories in-game, 
 
 ---
 
+## Contributors
+
+<a href="https://github.com/sch246/MaidUseHandCrank/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=sch246/MaidUseHandCrank" />
+</a>  
+
 ## Thanks
 
 - Touhou Little Maid Mod: TartaricAcid and others
