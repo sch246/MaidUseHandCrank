@@ -192,6 +192,9 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
             return;
         }
 
+        // 持续续租
+        refreshLock(level, crankPos);
+
         // 开始操作状态
         int maxOperationTime = Config.OPERATION_INTERVAL.get();
         maid.getLookControl().setLookAt(crankPos.getCenter());
