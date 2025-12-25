@@ -97,11 +97,10 @@ repositories {
         }
     }
     maven {
-        url "https://maven.shedaniel.me/"
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
         content {
-            includeGroup "me.shedaniel"
-            includeGroup "me.shedaniel.cloth"
-            includeGroup "dev.architectury"
+            includeGroup "maven.modrinth"
         }
     }
 }
@@ -119,7 +118,7 @@ dependencies {
     // Cloth Config
     implementation "maven.modrinth:cloth-config:15.0.140+neoforge"
 
-    runtimeOnly fileTree(dir: 'mods', include: ['*.jar'])
+    compileOnly fileTree(dir: 'mods', include: ['*.jar'])
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
