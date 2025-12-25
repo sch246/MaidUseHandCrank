@@ -4,13 +4,36 @@ package com.sch246.muhc.config;
 import com.sch246.muhc.Config;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.config.ConfigTracker;
+import net.minecraftforge.fml.config.ModConfig;
+import com.sch246.muhc.MaidUseHandCrank;
 
 import java.util.List;
 
 public final class ClothConfigScreen {
     private ClothConfigScreen() {
+    }
+
+    /**
+     * Forge 模组菜单入口专用：创建完整的 Screen
+     */
+    public static Screen create(Screen parent) {
+        // 1. 创建 Builder
+        ConfigBuilder root = ConfigBuilder.create()
+                .setParentScreen(parent)
+                .setTitle(Component.translatable("muhc.configuration.title"));
+
+        // 设置全局样式
+        root.setGlobalized(true);
+        root.setGlobalizedExpanded(false);
+
+        // 2. 调用共用的填充逻辑
+        init(root, root.entryBuilder());
+
+        return root.build();
     }
 
     @SuppressWarnings("unchecked")
