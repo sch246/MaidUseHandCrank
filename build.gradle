@@ -99,10 +99,6 @@ repositories {
     }
     maven {
         url = "https://maven.createmod.net"
-        content {
-            includeGroup "net.createmod.ponder"
-            includeGroup "net.createmod.flywheel"
-        }
     }
     maven {
         url = "https://jm.gserv.me/repository/maven-public" // JourneyMap
