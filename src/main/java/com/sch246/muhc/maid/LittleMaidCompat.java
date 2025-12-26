@@ -5,15 +5,17 @@ import com.github.tartaricacid.touhoulittlemaid.api.LittleMaidExtension;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import com.sch246.muhc.event.ClothConfigEvent;
 import com.sch246.muhc.maid.task.HandCrankTask;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 
 @LittleMaidExtension
 public class LittleMaidCompat implements ILittleMaid {
     // 默认构造函数，女仆模组会在合适的时间调用这个构造函数。可以在这里注册女仆专属的事件
     public LittleMaidCompat() {
-        if (ModList.get().isLoaded("cloth_config")) {
+        if (FMLEnvironment.dist == Dist.CLIENT && ModList.get().isLoaded("cloth_config")) {
             MinecraftForge.EVENT_BUS.register(new ClothConfigEvent());
         }
     }
