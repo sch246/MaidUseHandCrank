@@ -113,7 +113,7 @@ dependencies {
     compileOnly "net.createmod.ponder:Ponder-NeoForge-$minecraft_version:$ponder_version"
 
     // 添加 Touhou Little Maid 依赖
-    implementation "curse.maven:touhou-little-maid-355044:6988538"
+    implementation "curse.maven:touhou-little-maid-355044:7307724"
 
     // Cloth Config
     implementation "maven.modrinth:cloth-config:15.0.140+neoforge"
