@@ -112,7 +112,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("curse.maven:touhou-little-maid-355044:7307720")
+    implementation fg.deobf("curse.maven:touhou-little-maid-355044:7510714")
     implementation fg.deobf("curse.maven:create-328085:6641603")
     implementation fg.deobf("curse.maven:create-connected-947914:6685744")
     implementation fg.deobf("curse.maven:cloth-config-348521:5729105")
