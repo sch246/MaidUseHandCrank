@@ -265,6 +265,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         if (--bubbleTimer <= 0) {
             bubbleTimer = getRandomBubbleTimer();
             String[] chatBubbles = DynamicLangKeys.getChatBubbles();
+            if (chatBubbles == null || chatBubbles.length == 0) return;
             Component component = getComponent(maid, chatBubbles[random.nextInt(chatBubbles.length)]);
             maid.getChatBubbleManager().addChatBubble(TextChatBubbleData.type2(component));
         }
@@ -272,6 +273,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
     private int getRandomBubbleTimer() {
         int r = Config.BUBBLE_INTERVAL.get();
+        if (r <= 0) return Integer.MAX_VALUE; // 设置0也许应该不触发
         return (r / 2) + random.nextInt(r);
     }
 
