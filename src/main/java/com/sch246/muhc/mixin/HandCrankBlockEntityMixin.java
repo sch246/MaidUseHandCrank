@@ -1,6 +1,5 @@
 package com.sch246.muhc.mixin;
 
-//import com.sch246.muhc.MaidUseHandCrank;
 import com.sch246.muhc.util.IMaidHandCrank;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.content.kinetics.crank.HandCrankBlockEntity;
@@ -10,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HandCrankBlockEntity.class)
 public abstract class HandCrankBlockEntityMixin extends GeneratingKineticBlockEntity implements IMaidHandCrank {
-//    @Shadow
-//    public int inUse;
 
     @Unique
     private float muhc$stress = 0;
@@ -27,10 +23,15 @@ public abstract class HandCrankBlockEntityMixin extends GeneratingKineticBlockEn
     @Unique
     private int muhc$tick = 0;
 
-//    @Shadow
-//    public boolean backwards;
+    @Unique
+    public float muhc$getStress() {
+        return muhc$stress;
+    }
 
-    @Shadow public abstract float getGeneratedSpeed();
+    @Unique
+    public int muhc$getTick() {
+        return muhc$tick;
+    }
 
     public HandCrankBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -66,19 +67,4 @@ public abstract class HandCrankBlockEntityMixin extends GeneratingKineticBlockEn
             }
         }
     }
-
-    @Override
-    public float calculateAddedStressCapacity() {
-        if (muhc$tick > 0) {
-//            if (this.level != null && this.level.isClientSide()) {
-//                MaidUseHandCrank.LOGGER.debug("calculateAddedStressCapacity: 直接应力 {}, 直接tick {}, 理论速度 {}, 实际速度 {}, inUse {}", muhc$stress, muhc$tick, speed, getGeneratedSpeed(), this.inUse);
-//            }
-            float capacity = muhc$stress;
-//            MaidUseHandCrank.LOGGER.debug("应力大小: {}", capacity*32);
-            this.lastCapacityProvided = capacity;
-            return capacity;
-        }
-        return super.calculateAddedStressCapacity();
-    }
-
 }
