@@ -5,4 +5,6 @@ package com.sch246.muhc.util;
  */
 public interface IMaidHandCrank {
     void muhc$setStress(float stress, int tick);
+    float muhc$getStress();
+    int muhc$getTick();
 }

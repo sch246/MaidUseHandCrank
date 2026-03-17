@@ -6,6 +6,7 @@
   "refmap": "muhc.refmap.json",
   "mixins": [
     "HandCrankBlockEntityMixin",
+    "KineticBlockEntityMixin",
     "ItemFrameMixin",
     "ItemFrameItemMixin"
   ],
