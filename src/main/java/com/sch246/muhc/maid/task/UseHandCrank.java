@@ -57,9 +57,23 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
         this.bubbleTimer = getRandomBubbleTimer();
     }
 
-    protected boolean outOfReachRange(EntityMaid maid, BlockPos pos) {
+    private double getDistSqr(ServerLevel level, BlockPos pos, Vec3 target) {
+        if (net.neoforged.fml.ModList.get().isLoaded("sable")) {
+            return com.sch246.muhc.compat.SableCompat.getDistanceSqr(level, pos, target);
+        }
+        return pos.distToCenterSqr(target);
+    }
+
+    private BlockPos getGlobalBlockPos(ServerLevel level, BlockPos pos) {
+        if (net.neoforged.fml.ModList.get().isLoaded("sable")) {
+            return com.sch246.muhc.compat.SableCompat.toGlobalBlockPos(level, pos);
+        }
+        return pos;
+    }
+
+    protected boolean outOfReachRange(ServerLevel level, EntityMaid maid, BlockPos pos) {
         int reachRadius = Config.REACH_RADIUS.get();
-        return pos.distToCenterSqr(maid.position()) > reachRadius * reachRadius;
+        return getDistSqr(level, pos, maid.position()) > reachRadius * reachRadius;
     }
 
     @Override
@@ -107,10 +121,10 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
             MaidUseHandCrank.LOGGER.debug("方块本是独占的");
         }
 
-        if (outOfReachRange(maid, crankPos)) {
+        if (outOfReachRange(level, maid, crankPos)) {
             MaidUseHandCrank.LOGGER.debug("发现手摇曲柄，但距离太远，开始移动...");
-            BehaviorUtils.setWalkAndLookTargetMemories(maid, getFrontPos(level, crankPos), speed, 0);
-//            BehaviorUtils.setWalkAndLookTargetMemories(maid, crankPos, speed, Config.REACH_RADIUS.get());
+            BehaviorUtils.setWalkAndLookTargetMemories(maid, getGlobalBlockPos(level, getFrontPos(level, crankPos)), speed, 0);
+//            BehaviorUtils.setWalkAndLookTargetMemories(maid, getGlobalBlockPos(level, crankPos), speed, Config.REACH_RADIUS.get());
             this.setNextCheckTickCount(5);
             return false;
         }
@@ -172,7 +186,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
             return false;
         }
 
-        if (outOfReachRange(maid, crankPos)) {
+        if (outOfReachRange(level, maid, crankPos)) {
             MaidUseHandCrank.LOGGER.debug("距离太远，停止操作");
             return false;
         }
@@ -335,7 +349,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                 .filter(pos -> level.getBlockEntity(pos) instanceof HandCrankBlockEntity handCrank
                         && handCrank.inUse == 0
                         && canLock(level, pos))
-                .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
+                .min(Comparator.comparingDouble(pos -> getDistSqr(level, pos, maid.position())))
                 .orElse(null);
 
         MaidUseHandCrank.LOGGER.debug("手摇曲柄搜索完成，结果: {}", result);
@@ -363,31 +377,40 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
 
         PoiManager poiManager = level.getPoiManager();
 
-        return ChunkPos.rangeClosed(new ChunkPos(minChunkX, minChunkZ), new ChunkPos(maxChunkX, maxChunkZ))
+        Stream<PoiRecord> stream = ChunkPos.rangeClosed(new ChunkPos(minChunkX, minChunkZ), new ChunkPos(maxChunkX, maxChunkZ))
                 .flatMap(chunkPos -> poiManager.getInChunk(
                         type -> type.value().equals(InitPoi.HAND_CRANK.get()),
-                        chunkPos, PoiManager.Occupancy.ANY))
-                .filter(poiRecord -> {
+                        chunkPos, PoiManager.Occupancy.ANY));
+
+        if (net.neoforged.fml.ModList.get().isLoaded("sable")) {
+            stream = Stream.concat(stream, com.sch246.muhc.compat.SableCompat.getSableCrank(level, BlockPos.containing(maidPos), Math.max(centerRadiusSqr, maidRadiusSqr)));
+        }
+
+        return stream.filter(poiRecord -> {
                     BlockPos pos = poiRecord.getPos();
                     // 需要能走到正前方，要么能直接碰到
-                    return getFrontPos(level, pos).distToCenterSqr(centerPos) <= centerRadiusSqr ||
-                            pos.distToCenterSqr(maidPos) <= maidRadiusSqr;
+                    return getDistSqr(level, getFrontPos(level, pos), centerPos) <= centerRadiusSqr ||
+                            getDistSqr(level, pos, maidPos) <= maidRadiusSqr;
                 });
     }
 
     @javax.annotation.Nullable
     private BlockPos getNearestReachableCrankPosition(EntityMaid maid, ServerLevel level, Predicate<BlockPos> blockPredicate) {
-        // 使用注册的POI类型查找手摇曲柄
-        return level.getPoiManager()
-                .getInRange(
-                        type -> type.value().equals(InitPoi.HAND_CRANK.get()),
-                        maid.blockPosition(),
-                        Config.REACH_RADIUS.get(),
-                        PoiManager.Occupancy.ANY
-                )
-                .map(PoiRecord::getPos)
+        Stream<PoiRecord> stream = level.getPoiManager().getInRange(
+                type -> type.value().equals(InitPoi.HAND_CRANK.get()),
+                maid.blockPosition(),
+                Config.REACH_RADIUS.get(),
+                PoiManager.Occupancy.ANY
+        );
+
+        if (net.neoforged.fml.ModList.get().isLoaded("sable")) {
+            stream = Stream.concat(stream, com.sch246.muhc.compat.SableCompat.getSableCrank(level, maid.blockPosition(), Config.REACH_RADIUS.get() * Config.REACH_RADIUS.get()));
+        }
+
+        return stream.map(PoiRecord::getPos)
+                .filter(p -> getDistSqr(level, p, maid.position()) <= Config.REACH_RADIUS.get() * Config.REACH_RADIUS.get())
                 .filter(blockPredicate)
-                .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
+                .min(Comparator.comparingDouble(pos -> getDistSqr(level, pos, maid.position())))
                 .orElse(null);
     }
 
