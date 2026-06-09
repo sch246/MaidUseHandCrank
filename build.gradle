@@ -110,7 +110,7 @@ repositories {
 
 dependencies {
     // 添加 Create 依赖
-    implementation "curse.maven:create-328085:6641610"
+    implementation "curse.maven:create-328085:7963363"
     implementation "curse.maven:create-connected-947914:8142873"
     compileOnly "com.tterrag.registrate:Registrate:$registrate_version"
     compileOnly "net.createmod.ponder:Ponder-NeoForge-$minecraft_version:$ponder_version"
@@ -121,8 +121,8 @@ dependencies {
     // Cloth Config
     implementation "maven.modrinth:cloth-config:15.0.140+neoforge"
 
-    compileOnly("dev.ryanhcode.sable:sable-neoforge-1.21.1:1.2.1") { transitive = false }
-    compileOnly("dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:1.6.0") { transitive = false }
+    implementation("dev.ryanhcode.sable:sable-neoforge-1.21.1:1.2.1") { transitive = false }
+    implementation("dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:1.6.0") { transitive = false }
 
     compileOnly fileTree(dir: 'mods', include: ['*.jar'])
 }
