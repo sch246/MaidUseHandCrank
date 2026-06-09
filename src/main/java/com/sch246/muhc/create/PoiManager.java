@@ -8,7 +8,7 @@ import com.simibubi.create.AllBlocks;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import com.hlysine.create_connected.CCBlocks;
+import com.hlysine.create_connected.registries.CCBlocks;
 
 
 public final class PoiManager {

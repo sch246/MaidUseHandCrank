@@ -44,6 +44,6 @@ license="${mod_license}"
 [[dependencies."${mod_id}"]]
     modId="create_connected"
     type="optional"
-    versionRange="[1.0.0,)"
+    versionRange="[1.2.0,)"
     ordering="AFTER"
     side="BOTH"
