@@ -3,7 +3,7 @@
 package com.sch246.muhc.create;
 
 import com.google.common.collect.ImmutableSet;
-import com.hlysine.create_connected.CCBlocks;
+import com.hlysine.create_connected.registries.CCBlocks;
 import com.simibubi.create.AllBlocks;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.level.block.state.BlockState;
