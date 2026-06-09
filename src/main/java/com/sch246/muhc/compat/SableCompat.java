@@ -1,6 +1,11 @@
 package com.sch246.muhc.compat;
 
+import java.util.stream.Stream;
+
+import org.joml.Vector3dc;
+
 import com.sch246.muhc.create.InitPoi;
+
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
@@ -14,13 +19,19 @@ import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiRecord;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3dc;
+import net.neoforged.fml.ModList;
 
-import java.util.stream.Stream;
+public final class SableCompat {
+    private SableCompat() {
+    }
 
-public class SableCompat {
+    private static final boolean isSableLoaded = ModList.get().isLoaded("sable");
 
     public static Stream<PoiRecord> getSableCrank(ServerLevel level, BlockPos maidPos, double searchRadiusSqr) {
+        if (!isSableLoaded) {
+            return Stream.empty();
+        }
+
         SubLevelContainer container = SubLevelContainer.getContainer(level);
         if (container == null) return Stream.empty();
 
@@ -51,6 +62,10 @@ public class SableCompat {
     }
 
     public static double getDistanceSqr(ServerLevel level, BlockPos pos, Vec3 target) {
+        if (!isSableLoaded) {
+            return pos.distToCenterSqr(target);
+        }
+
         SubLevel subLevel = Sable.HELPER.getContaining(level, pos);
         if (subLevel != null) {
             Vector3dc globalPos = subLevel.logicalPose().transformPosition(JOMLConversion.atCenterOf(pos));
@@ -60,6 +75,10 @@ public class SableCompat {
     }
 
     public static BlockPos toGlobalBlockPos(ServerLevel level, BlockPos pos) {
+        if (!isSableLoaded) {
+            return pos;
+        }
+
         SubLevel subLevel = Sable.HELPER.getContaining(level, pos);
         if (subLevel != null) {
             Vector3dc globalPos = subLevel.logicalPose().transformPosition(JOMLConversion.atCenterOf(pos));

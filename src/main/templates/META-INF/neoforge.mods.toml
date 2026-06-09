@@ -47,3 +47,10 @@ license="${mod_license}"
     versionRange="[1.2.0,)"
     ordering="AFTER"
     side="BOTH"
+
+[[dependencies."${mod_id}"]]
+    modId = "sable"
+    type="optional"
+    versionRange = "[1.0.0,)"
+    ordering = "AFTER"
+    side = "BOTH"

@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import com.simibubi.create.AllBlocks;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.fml.ModList;
 
 import com.hlysine.create_connected.registries.CCBlocks;
 
@@ -56,6 +57,6 @@ public final class PoiManager {
     }
 
     private static boolean isCreateConnectedLoaded() {
-        return net.neoforged.fml.ModList.get().isLoaded("create_connected");
+        return ModList.get().isLoaded("create_connected");
     }
 }

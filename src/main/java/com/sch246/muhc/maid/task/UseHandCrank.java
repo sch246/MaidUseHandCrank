@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.google.common.collect.ImmutableMap;
 import com.sch246.muhc.Config;
 import com.sch246.muhc.MaidUseHandCrank;
+import com.sch246.muhc.compat.SableCompat;
 import com.sch246.muhc.create.InitPoi;
 import com.sch246.muhc.util.DynamicLangKeys;
 import com.sch246.muhc.util.IMaidHandCrank;
@@ -58,17 +59,11 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
     }
 
     private double getDistSqr(ServerLevel level, BlockPos pos, Vec3 target) {
-        if (net.neoforged.fml.ModList.get().isLoaded("sable")) {
-            return com.sch246.muhc.compat.SableCompat.getDistanceSqr(level, pos, target);
-        }
-        return pos.distToCenterSqr(target);
+        return SableCompat.getDistanceSqr(level, pos, target);
     }
 
     private BlockPos getGlobalBlockPos(ServerLevel level, BlockPos pos) {
-        if (net.neoforged.fml.ModList.get().isLoaded("sable")) {
-            return com.sch246.muhc.compat.SableCompat.toGlobalBlockPos(level, pos);
-        }
-        return pos;
+        return SableCompat.toGlobalBlockPos(level, pos);
     }
 
     protected boolean outOfReachRange(ServerLevel level, EntityMaid maid, BlockPos pos) {
@@ -382,9 +377,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                         type -> type.value().equals(InitPoi.HAND_CRANK.get()),
                         chunkPos, PoiManager.Occupancy.ANY));
 
-        if (net.neoforged.fml.ModList.get().isLoaded("sable")) {
-            stream = Stream.concat(stream, com.sch246.muhc.compat.SableCompat.getSableCrank(level, BlockPos.containing(maidPos), Math.max(centerRadiusSqr, maidRadiusSqr)));
-        }
+        stream = Stream.concat(stream, SableCompat.getSableCrank(level, BlockPos.containing(maidPos), Math.max(centerRadiusSqr, maidRadiusSqr)));
 
         return stream.filter(poiRecord -> {
                     BlockPos pos = poiRecord.getPos();
@@ -403,9 +396,7 @@ public class UseHandCrank extends MaidCheckRateTask implements IUniPosOwner {
                 PoiManager.Occupancy.ANY
         );
 
-        if (net.neoforged.fml.ModList.get().isLoaded("sable")) {
-            stream = Stream.concat(stream, com.sch246.muhc.compat.SableCompat.getSableCrank(level, maid.blockPosition(), Config.REACH_RADIUS.get() * Config.REACH_RADIUS.get()));
-        }
+        stream = Stream.concat(stream, SableCompat.getSableCrank(level, maid.blockPosition(), Config.REACH_RADIUS.get() * Config.REACH_RADIUS.get()));
 
         return stream.map(PoiRecord::getPos)
                 .filter(p -> getDistSqr(level, p, maid.position()) <= Config.REACH_RADIUS.get() * Config.REACH_RADIUS.get())
